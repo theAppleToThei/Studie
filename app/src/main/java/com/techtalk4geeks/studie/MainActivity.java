@@ -226,7 +226,8 @@ public class MainActivity extends Activity {
                     public void run() {
                         itWorkedDialog.setMessage(quizletSet.getDebugSummary());
                         itWorkedDialog.show();
-                        //TODO Show Set
+                        setContentView(R.layout.set_layout);
+                        overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
                     }
                 });
 

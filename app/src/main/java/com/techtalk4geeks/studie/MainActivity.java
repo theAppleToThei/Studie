@@ -50,7 +50,11 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getActionBar().setDisplayUseLogoEnabled(true);
+        try {
+            getActionBar().setDisplayUseLogoEnabled(true);
+        } catch (NullPointerException np) {
+            Log.e(S, "Method setDisplayUseLogoEnabled produced NullPointerException!");
+        }
         getActionBar().setDisplayShowHomeEnabled(true);
         getActionBar().setLogo(R.drawable.studieactionbar);
 
@@ -180,8 +184,7 @@ public class MainActivity extends Activity {
 
         if (responseCode == HttpURLConnection.HTTP_OK) {
             InputStream in = httpConnection.getInputStream();
-            String jsonStr = getStringFromInputStream(in);
-            return jsonStr;
+            return getStringFromInputStream(in);
         } else {
             return null;
         }
@@ -199,8 +202,7 @@ public class MainActivity extends Activity {
 
         if (responseCode == HttpURLConnection.HTTP_OK) {
             InputStream in = httpConnection.getInputStream();
-            String jsonStr = getStringFromInputStream(in);
-            return jsonStr;
+            return getStringFromInputStream(in);
         } else {
             return null;
         }
@@ -220,8 +222,7 @@ public class MainActivity extends Activity {
 
         if (responseCode == HttpURLConnection.HTTP_OK) {
             InputStream in = httpConnection.getInputStream();
-            String jsonStr = getStringFromInputStream(in);
-            return jsonStr;
+            return getStringFromInputStream(in);
         } else {
             return null;
         }

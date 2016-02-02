@@ -20,7 +20,7 @@ public class QuizletUser {
         jsonOb = new JSONObject(jsonString);
 
         name = jsonOb.getString("username");
-        if (jsonOb.getString("account_type").equals("plus")) {
+        if (jsonOb.getString("account_type").equalsIgnoreCase("plus")) {
             isPlus = true;
         }
         id = jsonOb.getString("id");

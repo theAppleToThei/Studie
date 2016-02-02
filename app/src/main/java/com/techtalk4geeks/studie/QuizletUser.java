@@ -25,7 +25,7 @@ public class QuizletUser {
         }
         id = jsonOb.getString("id");
         profileImage = jsonOb.getString("profile_image");
-        Log.i("Studie", "User Created\n--- " + name + "---\nisPlus = " + isPlus + "\nid = " + id);
+        Log.i("Studie", "User Created\n--- " + name + " ---\nisPlus = " + isPlus + "\nid = " + id);
     }
 
 }

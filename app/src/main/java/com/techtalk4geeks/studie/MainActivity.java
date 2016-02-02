@@ -191,7 +191,8 @@ public class MainActivity extends Activity {
     }
 
     public String getUser(String username) throws Exception {
-        String apiLink = "https://api.quizlet.com/2.0/users/" + username;
+        String apiLink = "https://api.quizlet.com/2.0/users/" + username + "?access_token=6jVjJsBFdSuqPmutqBptzzXxecQnxQmDxmYQEDhq&whitespace=1";
+        Log.i(S, "User apiLink = " + apiLink);
         URL url = new URL(apiLink);
         URLConnection connection;
         connection = url.openConnection();
@@ -272,7 +273,7 @@ public class MainActivity extends Activity {
                 Log.i(S, "Requesting set...");
                 setJSON = getSet(params[0]);
                 final QuizletSet quizletSet = new QuizletSet(setJSON);
-                QuizletUser quizletUser = new QuizletUser(getUser(quizletSet));
+                QuizletUser quizletUser = new QuizletUser(getUser(quizletSet.getCreatorName()));
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

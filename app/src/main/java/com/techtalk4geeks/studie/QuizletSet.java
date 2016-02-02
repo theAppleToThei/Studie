@@ -40,11 +40,11 @@ public class QuizletSet {
         termLanguage = jsonOb.getString("lang_terms");
         definitionLanguage = jsonOb.getString("lang_definitions");
         creatorName = jsonOb.getString("created_by");
-        Log.i("Studie", "Set Created\n--- " + title + "---\n" + createdBy + "\n" + description);
+        Log.i("Studie", "Set Created\n--- " + title + " ---\n" + createdBy + "\n" + description);
     }
 
     public String getDebugSummary() {
-        Log.i("Studie", "--- " + title + "---\n" + createdBy + "\n" + description);
+        Log.i("Studie", "--- " + title + " ---\n" + createdBy + "\n" + description);
         return "--- " + title + "---\n" + createdBy + "\n" + description;
     }
 

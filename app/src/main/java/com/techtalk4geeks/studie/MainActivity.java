@@ -187,6 +187,44 @@ public class MainActivity extends Activity {
         }
     }
 
+    public String getUser(String username) throws Exception {
+        String apiLink = "https://api.quizlet.com/2.0/users/" + username;
+        URL url = new URL(apiLink);
+        URLConnection connection;
+        connection = url.openConnection();
+
+        HttpURLConnection httpConnection = (HttpURLConnection) connection;
+
+        int responseCode = httpConnection.getResponseCode();
+
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            InputStream in = httpConnection.getInputStream();
+            String jsonStr = getStringFromInputStream(in);
+            return jsonStr;
+        } else {
+            return null;
+        }
+    }
+
+    public String getUser(QuizletSet quizletSet) throws Exception {
+        String apiLink = "https://api.quizlet.com/2.0/users/" + quizletSet.getCreatorName();
+        URL url = new URL(apiLink);
+        URLConnection connection;
+        connection = url.openConnection();
+
+        HttpURLConnection httpConnection = (HttpURLConnection) connection;
+
+        int responseCode = httpConnection.getResponseCode();
+
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            InputStream in = httpConnection.getInputStream();
+            String jsonStr = getStringFromInputStream(in);
+            return jsonStr;
+        } else {
+            return null;
+        }
+    }
+
     private static String getStringFromInputStream(InputStream is) {
 
         BufferedReader br = null;
@@ -230,6 +268,7 @@ public class MainActivity extends Activity {
             try {
                 setJSON = getSet(params[0]);
                 final QuizletSet quizletSet = new QuizletSet(setJSON);
+                QuizletUser quizletUser = new QuizletUser(getUser(quizletSet));
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

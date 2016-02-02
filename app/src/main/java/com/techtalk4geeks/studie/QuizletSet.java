@@ -21,7 +21,7 @@ public class QuizletSet {
     String termLanguage;
     ArrayList<String> definitions;
     String definitionLanguage;
-    QuizletUser creator;
+    String creatorName;
 
     public QuizletSet(String jsonString) throws Exception {
         JSONObject jsonOb;
@@ -39,7 +39,8 @@ public class QuizletSet {
         }
         termLanguage = jsonOb.getString("lang_terms");
         definitionLanguage = jsonOb.getString("lang_definitions");
-        creator = new QuizletUser(jsonOb.getString("created_by"));
+        creatorName = jsonOb.getString("created_by");
+        Log.i("Studie", "Set Created\n--- " + title + "---\n" + createdBy + "\n" + description);
     }
 
     public String getDebugSummary() {
@@ -53,5 +54,9 @@ public class QuizletSet {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getCreatorName() {
+        return creatorName;
     }
 }

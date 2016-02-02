@@ -76,7 +76,7 @@ public class MainActivity extends Activity {
 
         itWorkedDialog = new AlertDialog.Builder(MainActivity.this).create();
         itWorkedDialog.setTitle("It worked!");
-        itWorkedDialog.setMessage("Yay!\n" + quizletTitle);
+        itWorkedDialog.setMessage("No summary here... Why though?");
         itWorkedDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -137,6 +137,15 @@ public class MainActivity extends Activity {
             }
         });
     }
+
+//    @Override
+    // public void onBackPressed()
+    // {
+    // Intent start = new Intent(this, StartActivity.class);
+    // start.addCategory(Intent.CATEGORY_HOME);
+    // startActivity(start);
+    // overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+    // }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

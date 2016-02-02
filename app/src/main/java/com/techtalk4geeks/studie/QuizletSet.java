@@ -3,6 +3,7 @@ package com.techtalk4geeks.studie;
 import android.util.Log;
 
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 
@@ -20,6 +21,7 @@ public class QuizletSet {
     String termLanguage;
     ArrayList<String> definitions;
     String definitionLanguage;
+    QuizletUser creator;
 
     public QuizletSet(String jsonString) throws Exception {
         JSONObject jsonOb;
@@ -37,6 +39,7 @@ public class QuizletSet {
         }
         termLanguage = jsonOb.getString("lang_terms");
         definitionLanguage = jsonOb.getString("lang_definitions");
+        creator = new QuizletUser(jsonOb.getString("created_by"));
     }
 
     public String getDebugSummary() {

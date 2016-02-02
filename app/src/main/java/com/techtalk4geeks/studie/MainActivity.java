@@ -122,8 +122,8 @@ public class MainActivity extends Activity {
                     apiLink = "https://api.quizlet.com/2.0/sets/"
                             + quizletLink.substring(substringStart, substringEnd)
                             + "?client_id=brgUUPyxDF&whitespace=1";
-                    Log.i(S, "quizletLink = " + quizletLink);
-                    Log.i(S, "apiLink = " + apiLink);
+                    Log.i(S, "Set quizletLink = " + quizletLink);
+                    Log.i(S, "Set apiLink = " + apiLink);
                     try {
                         new QuizletAPIOperations().execute(apiLink);
                     } catch (Exception e) {
@@ -208,6 +208,8 @@ public class MainActivity extends Activity {
 
     public String getUser(QuizletSet quizletSet) throws Exception {
         String apiLink = "https://api.quizlet.com/2.0/users/" + quizletSet.getCreatorName();
+        Log.i(S, "Requesting user " + quizletSet.getCreatorName() + "...");
+        Log.i(S, "User apiLink = " + apiLink);
         URL url = new URL(apiLink);
         URLConnection connection;
         connection = url.openConnection();
@@ -266,6 +268,7 @@ public class MainActivity extends Activity {
         protected String doInBackground(String... params) {
             Log.i(S, "Made it to doInBackground()");
             try {
+                Log.i(S, "Requesting set...");
                 setJSON = getSet(params[0]);
                 final QuizletSet quizletSet = new QuizletSet(setJSON);
                 QuizletUser quizletUser = new QuizletUser(getUser(quizletSet));

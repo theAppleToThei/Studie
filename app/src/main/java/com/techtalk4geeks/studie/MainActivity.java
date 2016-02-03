@@ -15,9 +15,6 @@ import android.widget.TextView;
 import android.util.Log;
 import android.os.AsyncTask;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -129,7 +126,7 @@ public class MainActivity extends Activity {
                     Log.i(S, "Set quizletLink = " + quizletLink);
                     Log.i(S, "Set apiLink = " + apiLink);
                     try {
-                        new QuizletAPIOperations().execute(apiLink);
+                        new quizletSetOperations().execute(apiLink);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -209,6 +206,10 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void updateSet(QuizletSet quizletSet) {
+        new updateSetOperations().execute(quizletSet.getAPILink());
+    }
+
     public String getUser(QuizletSet quizletSet) throws Exception {
         String apiLink = "https://api.quizlet.com/2.0/users/" + quizletSet.getCreatorName();
         Log.i(S, "Requesting user " + quizletSet.getCreatorName() + "...");
@@ -257,7 +258,7 @@ public class MainActivity extends Activity {
         return sb.toString();
     }
 
-    private class QuizletAPIOperations extends
+    private class quizletSetOperations extends
             AsyncTask<String, String, String> {
 
         @Override
@@ -273,14 +274,56 @@ public class MainActivity extends Activity {
                 Log.i(S, "Requesting set...");
                 setJSON = getSet(params[0]);
                 final QuizletSet quizletSet = new QuizletSet(setJSON);
+                quizletSet.setAPILink(params[0]);
                 QuizletUser quizletUser = new QuizletUser(getUser(quizletSet.getCreatorName()));
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         itWorkedDialog.setMessage(quizletSet.getDebugSummary());
                         itWorkedDialog.show();
-                        setContentView(R.layout.set_layout);
-                        overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+//                        setContentView(R.layout.set_layout);
+//                        overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+                    }
+                });
+
+            } catch (Exception e) {
+                Log.e(S, "Error After Program Start: " + e);
+            }
+
+            return "Error";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d(S, "Reached onPostExecute, Result = " + setJSON);
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+        }
+    }
+
+    private class updateSetOperations extends
+            AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            Log.i(S, "Made it to onPreExecute()");
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            Log.i(S, "Made it to doInBackground()");
+            try {
+                Log.i(S, "Requesting set...");
+                setJSON = getSet(params[0]);
+                QuizletSet quizletSet = new QuizletSet(setJSON);
+                QuizletUser quizletUser = new QuizletUser(getUser(quizletSet.getCreatorName()));
+                // TODO: Update the current set
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
                     }
                 });
 

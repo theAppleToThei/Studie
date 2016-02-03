@@ -1,5 +1,6 @@
 package com.techtalk4geeks.studie;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -22,6 +23,9 @@ public class QuizletSet {
     ArrayList<String> definitions;
     String definitionLanguage;
     String creatorName;
+    String apiLink;
+
+    public static final String S = "Studie";
 
     public QuizletSet(String jsonString) throws Exception {
         JSONObject jsonOb;
@@ -45,7 +49,7 @@ public class QuizletSet {
 
     public String getDebugSummary() {
         Log.i("Studie", "--- " + title + " ---\n" + createdBy + "\n" + description);
-        return "--- " + title + "---\n" + createdBy + "\n" + description;
+        return "--- " + title + " ---\n" + createdBy + "\n" + description;
     }
 
     public String getTitle() {
@@ -58,5 +62,13 @@ public class QuizletSet {
 
     public String getCreatorName() {
         return creatorName;
+    }
+
+    public void setAPILink(String apiLink) {
+        this.apiLink = apiLink;
+    }
+
+    public String getAPILink() {
+        return apiLink;
     }
 }

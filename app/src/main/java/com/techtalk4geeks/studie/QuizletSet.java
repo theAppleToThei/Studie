@@ -1,10 +1,9 @@
 package com.techtalk4geeks.studie;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
-import org.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -17,13 +16,15 @@ public class QuizletSet {
     String description;
     String createdBy;
     String URL;
+    String id;
     int termCount;
-    ArrayList<String> terms;
+    ArrayList<String> terms = new ArrayList<String>();
     String termLanguage;
-    ArrayList<String> definitions;
+    ArrayList<String> definitions = new ArrayList<String>();
     String definitionLanguage;
     String creatorName;
     String apiLink;
+    ArrayList<QuizletGroup> groups = new ArrayList<QuizletGroup>();
 
     public static final String S = "Studie";
 
@@ -35,6 +36,7 @@ public class QuizletSet {
         description = jsonOb.getString("description");
         createdBy = jsonOb.getString("created_by");
         URL = jsonOb.getString("url");
+        id = jsonOb.getString("id");
         try {
             termCount = Integer.parseInt(jsonOb.getString("term_count"));
         } catch (NumberFormatException nf) {
@@ -44,12 +46,26 @@ public class QuizletSet {
         termLanguage = jsonOb.getString("lang_terms");
         definitionLanguage = jsonOb.getString("lang_definitions");
         creatorName = jsonOb.getString("created_by");
+
+        JSONArray arr = jsonOb.getJSONArray("terms");
+        for (int i = 0; i < arr.length(); i++) {
+            terms.add(i, arr.getJSONObject(i).getString("term"));
+            definitions.add(i, arr.getJSONObject(i).getString("definition"));
+        }
+
         Log.i("Studie", "Set Created\n--- " + title + " ---\n" + createdBy + "\n" + description);
     }
 
     public String getDebugSummary() {
         Log.i("Studie", "--- " + title + " ---\n" + createdBy + "\n" + description);
         return "--- " + title + " ---\n" + createdBy + "\n" + description;
+    }
+
+    public void printTermsAndDefinitions() {
+        Log.i("Studie", "Printing terms and definitions for " + title);
+        for (int i = 0; i < terms.size(); i++) {
+            Log.i("Studie", terms.get(i) + " --- " + definitions.get(i));
+        }
     }
 
     public String getTitle() {

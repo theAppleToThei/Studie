@@ -14,7 +14,6 @@ public class QuizletSet {
 
     String title;
     String description;
-    String createdBy;
     String URL;
     String id;
     int termCount;
@@ -22,6 +21,7 @@ public class QuizletSet {
     String termLanguage;
     ArrayList<String> definitions = new ArrayList<String>();
     String definitionLanguage;
+    String creatorName;
     String apiLink;
     ArrayList<QuizletGroup> groups = new ArrayList<QuizletGroup>();
 
@@ -33,7 +33,6 @@ public class QuizletSet {
 
         title = jsonOb.getString("title");
         description = jsonOb.getString("description");
-        createdBy = jsonOb.getString("created_by");
         URL = jsonOb.getString("url");
         id = jsonOb.getString("id");
         try {
@@ -44,6 +43,7 @@ public class QuizletSet {
         }
         termLanguage = jsonOb.getString("lang_terms");
         definitionLanguage = jsonOb.getString("lang_definitions");
+        creatorName = jsonOb.getString("created_by");
 
         JSONArray arr = jsonOb.getJSONArray("terms");
         for (int i = 0; i < arr.length(); i++) {
@@ -51,12 +51,12 @@ public class QuizletSet {
             definitions.add(i, arr.getJSONObject(i).getString("definition"));
         }
 
-        Log.i("Studie", "Set Created\n--- " + title + " ---\n" + createdBy + "\n" + description);
+        Log.i("Studie", "Set Created\n--- " + title + " ---\n" + creatorName + "\n" + description);
     }
 
     public String getDebugSummary() {
-        Log.i("Studie", "--- " + title + " ---\n" + createdBy + "\n" + description);
-        return "--- " + title + " ---\n" + createdBy + "\n" + description;
+        Log.i("Studie", "--- " + title + " ---\n" + creatorName + "\n" + description);
+        return "--- " + title + " ---\n" + creatorName + "\n" + description;
     }
 
     public void printTermsAndDefinitions() {
@@ -72,6 +72,10 @@ public class QuizletSet {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getCreatorName() {
+        return creatorName;
     }
 
     public void setAPILink(String apiLink) {

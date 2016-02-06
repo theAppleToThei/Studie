@@ -22,7 +22,6 @@ public class QuizletSet {
     String termLanguage;
     ArrayList<String> definitions = new ArrayList<String>();
     String definitionLanguage;
-    String creatorName;
     String apiLink;
     ArrayList<QuizletGroup> groups = new ArrayList<QuizletGroup>();
 
@@ -45,7 +44,6 @@ public class QuizletSet {
         }
         termLanguage = jsonOb.getString("lang_terms");
         definitionLanguage = jsonOb.getString("lang_definitions");
-        creatorName = jsonOb.getString("created_by");
 
         JSONArray arr = jsonOb.getJSONArray("terms");
         for (int i = 0; i < arr.length(); i++) {
@@ -74,10 +72,6 @@ public class QuizletSet {
 
     public String getDescription() {
         return description;
-    }
-
-    public String getCreatorName() {
-        return creatorName;
     }
 
     public void setAPILink(String apiLink) {

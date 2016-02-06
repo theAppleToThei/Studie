@@ -43,6 +43,8 @@ public class MainActivity extends Activity {
 
     String setJSON;
 
+    public static final String ACCESS_TOKEN = "2rcp25WPAuaR4KxU9kEbhzbrPkw5N46nwSc4tgPA";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -188,7 +190,7 @@ public class MainActivity extends Activity {
     }
 
     public String getUser(String username) throws Exception {
-        String apiLink = "https://api.quizlet.com/2.0/users/" + username + "?access_token=6jVjJsBFdSuqPmutqBptzzXxecQnxQmDxmYQEDhq&whitespace=1";
+        String apiLink = "https://api.quizlet.com/2.0/users/" + username + "?access_token=" + ACCESS_TOKEN + "&whitespace=1";
         Log.i(S, "User apiLink = " + apiLink);
         URL url = new URL(apiLink);
         URLConnection connection;

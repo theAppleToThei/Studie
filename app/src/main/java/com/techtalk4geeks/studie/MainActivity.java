@@ -173,13 +173,13 @@ public class MainActivity extends Activity {
                     Log.i(S, "username = " + username);
                 } else {
                     Log.i(S, "isSignedIn = " + isSignedIn);
-                    findSetButton.setOnClickListener(new View.OnClickListener() {
-                        public void onClick(View v) {
-                            Uri uri = Uri.parse(authLink);
-                            Intent webIntent = new Intent(Intent.ACTION_VIEW, uri);
-                            startActivity(webIntent);
-                        }
-                    });
+//                    findSetButton.setOnClickListener(new View.OnClickListener() {
+//                        public void onClick(View v) {
+//                            Uri uri = Uri.parse(authLink);
+//                            Intent webIntent = new Intent(Intent.ACTION_VIEW, uri);
+//                            startActivity(webIntent);
+//                        }
+//                    });
 //                    signInDialog = new AlertDialog.Builder(MainActivity.this).create();
 //                    signInDialog.setTitle("Please Sign In");
 //                    signInDialog.setMessage("You are about to be redirected to sign into your Quizlet account.");

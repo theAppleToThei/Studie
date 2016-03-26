@@ -41,7 +41,7 @@ public class AccessToken {
             String username = jsonOb.getString("user_id");
             Log.i(S, "Username = " + username);
             user = new QuizletUser(username, accessToken);
-//            MainActivity.setACCESSTOKEN(accessToken);
+            MainActivity.setACCESSTOKEN(this);
         } catch (Exception np) {
                 Log.e("Studie", jsonOb.getString("error"));
         }
@@ -53,6 +53,10 @@ public class AccessToken {
 
     public String getUsername() {
         return user.getUsername();
+    }
+
+    public String getAccessToken() {
+        return accessToken;
     }
 
     public void setMainActivity(MainActivity m) {

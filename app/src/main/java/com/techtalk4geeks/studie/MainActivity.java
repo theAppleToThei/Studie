@@ -46,11 +46,13 @@ public class MainActivity extends Activity {
     AlertDialog signInDialog;
     String quizletTitle = "null";
 
-    public Boolean isSignedIn = false;
-
-    public String ACCESS_TOKEN = "";
+    public static Boolean isSignedIn = false;
+    public static String ACCESS_TOKEN;
+    public static String username;
     public static final String CLIENT_ID = "brgUUPyxDF";
     public static final String state = "PK_STUDIE";
+
+    private static MainActivity me;
 
     String quizletLink;
     String apiLink;
@@ -64,6 +66,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        me = this;
         setContentView(R.layout.activity_main);
         File file = new File(getFilesDir(), "Studie.txt");
 
@@ -166,6 +169,8 @@ public class MainActivity extends Activity {
                 if (isSignedIn == true) {
                     ACCESS_TOKEN = JSONObject.getString("ACCESS_TOKEN");
                     Log.i(S, "ACCESS_TOKEN = " + ACCESS_TOKEN);
+                    username = JSONObject.getString("username");
+                    Log.i(S, "username = " + username);
                 } else {
                     Log.i(S, "isSignedIn = " + isSignedIn);
                     findSetButton.setOnClickListener(new View.OnClickListener() {
@@ -306,11 +311,12 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void setACCESSTOKEN(String accesstoken) throws Exception {
+    public static void setACCESSTOKEN(AccessToken accesstoken) throws Exception {
         Log.d(S, "Setting Access Token");
-        ACCESS_TOKEN = accesstoken;
+        ACCESS_TOKEN = accesstoken.getAccessToken();
         isSignedIn = true;
-        saveFile(MainActivity.this);
+        username = accesstoken.getUsername();
+        saveFile(MainActivity.me);
     }
 
     public String getUser(String username) throws Exception {
@@ -385,21 +391,39 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void saveFile(Context context) throws Exception {
+    public static void saveFile(Context context) {
         Log.d(S, "SAVING FILE!");
-        JSONObject userJSON = toJSON();
-        String userString = userJSON.toString();
-        FileOutputStream FOS = context.openFileOutput("Studie.txt", 0);
-        OutputStreamWriter OSW = new OutputStreamWriter(FOS);
-        OSW.write(userString);
-        OSW.flush();
-        OSW.close();
+        try {
+            JSONObject userJSON = toJSON();
+            Log.d(S, "toJSON() completed");
+            String userString = userJSON.toString();
+            File file = new File(context.getFilesDir() + "/Studie.txt");
+            Log.d(S, "file = " + file);
+            FileOutputStream FOS = new FileOutputStream(file);
+            Log.d(S, "FileOutputStream created");
+            OutputStreamWriter OSW = new OutputStreamWriter(FOS);
+            Log.d(S, "OutputStreamWriter created");
+            OSW.write(userString);
+            OSW.flush();
+            OSW.close();
+        } catch (JSONException je) {
+            Log.e(S, "JSONException!", je);
+        } catch (IOException ioe) {
+            Log.e(S, "IOException!", ioe);
+        } catch (RuntimeException rte) {
+            Log.e(S, "RuntimeException!", rte);
+        }
+        Log.d(S, "OSW closed, file exists = " + (new File("Studie.txt").exists()));
     }
 
-    public JSONObject toJSON() throws JSONException {
+    public static JSONObject toJSON() throws JSONException {
         JSONObject result = new JSONObject();
         result.put("isSignedIn", isSignedIn);
+        Log.d(S, "Put isSignedIn to JSON as " + isSignedIn);
         result.put("ACCESS_TOKEN", ACCESS_TOKEN);
+        Log.d(S, "Put ACCESS_TOKEN to JSON as " + ACCESS_TOKEN);
+        result.put("username", username);
+        Log.d(S, "Put username to JSON as " + username);
         return result;
     }
 

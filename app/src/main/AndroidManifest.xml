@@ -37,7 +37,8 @@
 
         <activity
             android:name=".AfterAuthActivity"
-            android:label="@string/title_activity_after_auth">
+            android:label="@string/title_activity_after_auth"
+            android:screenOrientation="portrait">
 
             <intent-filter>
                 <data android:scheme="studie" />

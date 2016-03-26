@@ -135,7 +135,7 @@
                             android:layout_alignEnd="@+id/cardview"
                             android:layout_alignParentTop="true"
                             android:layout_marginEnd="149dp"
-                            android:text="Link Your Quizlet Account"
+                            android:text="Quizlet Account"
                             android:textAppearance="?android:attr/textAppearanceLarge" />
                     </TableRow>
 
@@ -156,7 +156,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@color/primary_dark"
-                            android:text="Sign In" />
+                            android:text="@string/signinbutton" />
                     </TableRow>
                 </TableLayout>
 

@@ -2,8 +2,13 @@ package com.techtalk4geeks.studie;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,16 +17,21 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.util.Log;
-import android.os.AsyncTask;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 
 public class MainActivity extends Activity {
 
@@ -33,29 +43,32 @@ public class MainActivity extends Activity {
     AlertDialog invalidURLDialog;
     AlertDialog noURLDialog;
     AlertDialog itWorkedDialog;
+    AlertDialog signInDialog;
     String quizletTitle = "null";
+
+    public Boolean isSignedIn = false;
+
+    public String ACCESS_TOKEN = "";
+    public static final String CLIENT_ID = "brgUUPyxDF";
+    public static final String state = "PK_STUDIE";
 
     String quizletLink;
     String apiLink;
+    String authLink = "https://quizlet.com/authorize?response_type=code&client_id=" + CLIENT_ID + "&scope=read&state=" + state;
     int substringStart;
     int substringEnd;
     int charCounter = 0;
 
     String setJSON;
 
-    public static final String ACCESS_TOKEN = "2rcp25WPAuaR4KxU9kEbhzbrPkw5N46nwSc4tgPA";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        try {
-            getActionBar().setDisplayUseLogoEnabled(true);
-        } catch (NullPointerException np) {
-            Log.e(S, "Method setDisplayUseLogoEnabled produced NullPointerException!");
-        }
+        File file = new File(getFilesDir(), "Studie.txt");
+
         getActionBar().setDisplayShowHomeEnabled(true);
-        getActionBar().setLogo(R.drawable.studieactionbar);
+        getActionBar().setIcon(R.drawable.studieactionbar);
 
         invalidURLDialog = new AlertDialog.Builder(MainActivity.this).create();
         invalidURLDialog.setTitle("Invalid URL");
@@ -97,7 +110,7 @@ public class MainActivity extends Activity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if ((actionId == EditorInfo.IME_ACTION_SEARCH) || ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN))) {
-                    //TODO: Start Quizlet Set intent
+
                     return true;
                 } else {
                     return false;
@@ -139,6 +152,110 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
+        if (file.exists()) {
+            FileInputStream FIN;
+            try {
+                FIN = openFileInput("Studie.txt");
+                InputStreamReader ISR = new InputStreamReader(FIN);
+                BufferedReader br = new BufferedReader(ISR);
+                String jsonString = br.readLine();
+                JSONObject JSONObject = new JSONObject(jsonString);
+                isSignedIn = JSONObject.getBoolean("isSignedIn");
+                Log.i(S, "isSignedIn = " + isSignedIn);
+                if (isSignedIn == true) {
+                    ACCESS_TOKEN = JSONObject.getString("ACCESS_TOKEN");
+                    Log.i(S, "ACCESS_TOKEN = " + ACCESS_TOKEN);
+                } else {
+                    Log.i(S, "isSignedIn = " + isSignedIn);
+                    findSetButton.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            Uri uri = Uri.parse(authLink);
+                            Intent webIntent = new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(webIntent);
+                        }
+                    });
+//                    signInDialog = new AlertDialog.Builder(MainActivity.this).create();
+//                    signInDialog.setTitle("Please Sign In");
+//                    signInDialog.setMessage("You are about to be redirected to sign into your Quizlet account.");
+//                    signInDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+//                            new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    dialog.dismiss();
+//                                    Uri uri = Uri.parse(authLink);
+//                                    Intent webIntent = new Intent(Intent.ACTION_VIEW, uri);
+//                                    startActivity(webIntent);
+//                                }
+//                            });
+//                    signInDialog.show();
+                    setContentView(R.layout.before_auth);
+                    overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+                    Button nothanks = (Button) this.findViewById(R.id.nosignin);
+                    nothanks.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            setContentView(R.layout.activity_main);
+                            overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+                        }
+                    });
+                    Button signInIntro = (Button) this.findViewById(R.id.signInButtonUI);
+                    signInIntro.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            Uri uri = Uri.parse(authLink);
+                            Intent webIntent = new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(webIntent);
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                file.createNewFile();
+                saveFile(MainActivity.this);
+//                signInDialog = new AlertDialog.Builder(MainActivity.this).create();
+//                signInDialog.setTitle("Please Sign In");
+//                signInDialog.setMessage("You are about to be redirected to sign into your Quizlet account.");
+//                signInDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+//                        new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                dialog.dismiss();
+//                                Uri uri = Uri.parse(authLink);
+//                                Intent webIntent = new Intent(Intent.ACTION_VIEW, uri);
+//                                startActivity(webIntent);
+//                            }
+//                        });
+//                signInDialog.show();
+            } catch (Exception e) {
+                Log.e(S, "Exception while creating/saving file.");
+                e.printStackTrace();
+            }
+            if (isSignedIn == false) {
+                setContentView(R.layout.before_auth);
+                overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+                Button nothanks = (Button) this.findViewById(R.id.nosignin);
+                nothanks.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        setContentView(R.layout.activity_main);
+                        overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+                    }
+                });
+                Button signInIntro = (Button) this.findViewById(R.id.signInButtonUI);
+                signInIntro.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        Uri uri = Uri.parse(authLink);
+                        Intent webIntent = new Intent(Intent.ACTION_VIEW, uri);
+                        startActivity(webIntent);
+                    }
+                });
+            }
+            try {
+                getActionBar().setDisplayUseLogoEnabled(false);
+            } catch (NullPointerException np) {
+                Log.e(S, "Method setDisplayUseLogoEnabled produced NullPointerException!");
+            }
+
+        }
     }
 
 //    @Override
@@ -189,8 +306,34 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void setACCESSTOKEN(String accesstoken) throws Exception {
+        Log.d(S, "Setting Access Token");
+        ACCESS_TOKEN = accesstoken;
+        isSignedIn = true;
+        saveFile(MainActivity.this);
+    }
+
     public String getUser(String username) throws Exception {
         String apiLink = "https://api.quizlet.com/2.0/users/" + username + "?access_token=" + ACCESS_TOKEN + "&whitespace=1";
+        Log.i(S, "User apiLink = " + apiLink);
+        URL url = new URL(apiLink);
+        URLConnection connection;
+        connection = url.openConnection();
+
+        HttpURLConnection httpConnection = (HttpURLConnection) connection;
+
+        int responseCode = httpConnection.getResponseCode();
+
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            InputStream in = httpConnection.getInputStream();
+            return getStringFromInputStream(in);
+        } else {
+            return null;
+        }
+    }
+
+    public static String getUser(String username, String accessToken) throws Exception {
+        String apiLink = "https://api.quizlet.com/2.0/users/" + username + "?access_token=" + accessToken + "&whitespace=1";
         Log.i(S, "User apiLink = " + apiLink);
         URL url = new URL(apiLink);
         URLConnection connection;
@@ -212,6 +355,16 @@ public class MainActivity extends Activity {
         new updateSetOperations().execute(quizletSet.getAPILink());
     }
 
+    public Boolean checkIfSignedIn() {
+        if (isSignedIn) {
+            setContentView(R.layout.before_auth_required);
+            overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public String getUser(QuizletSet quizletSet) throws Exception {
         String apiLink = "https://api.quizlet.com/2.0/users/" + quizletSet.getCreatorName();
         Log.i(S, "Requesting user " + quizletSet.getCreatorName() + "...");
@@ -230,6 +383,24 @@ public class MainActivity extends Activity {
         } else {
             return null;
         }
+    }
+
+    public void saveFile(Context context) throws Exception {
+        Log.d(S, "SAVING FILE!");
+        JSONObject userJSON = toJSON();
+        String userString = userJSON.toString();
+        FileOutputStream FOS = context.openFileOutput("Studie.txt", 0);
+        OutputStreamWriter OSW = new OutputStreamWriter(FOS);
+        OSW.write(userString);
+        OSW.flush();
+        OSW.close();
+    }
+
+    public JSONObject toJSON() throws JSONException {
+        JSONObject result = new JSONObject();
+        result.put("isSignedIn", isSignedIn);
+        result.put("ACCESS_TOKEN", ACCESS_TOKEN);
+        return result;
     }
 
     private static String getStringFromInputStream(InputStream is) {
@@ -283,8 +454,10 @@ public class MainActivity extends Activity {
                     public void run() {
                         itWorkedDialog.setMessage(quizletSet.getDebugSummary());
                         itWorkedDialog.show();
-//                        setContentView(R.layout.set_layout);
-//                        overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+                        Intent intent = new Intent(MainActivity.this, SetActivity.class);
+                        startActivity(intent);
+                        Log.i(S, "Started SetActivity");
+                        overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
                     }
                 });
 

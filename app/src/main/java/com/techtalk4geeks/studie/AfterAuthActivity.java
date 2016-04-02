@@ -1,12 +1,16 @@
 package com.techtalk4geeks.studie;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import org.json.JSONObject;
@@ -33,6 +37,7 @@ public class AfterAuthActivity extends Activity {
     String CODE;
     MainActivity ma = new MainActivity();
     AccessToken accessToken;
+    Animation animationFadeIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +45,8 @@ public class AfterAuthActivity extends Activity {
 
         getActionBar().setDisplayShowHomeEnabled(true);
         getActionBar().setIcon(R.drawable.studieactionbar);
+
+        animationFadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
 
         setTitle("Studie");
         Uri uri = getIntent().getData();
@@ -221,8 +228,21 @@ public class AfterAuthActivity extends Activity {
         protected void onPostExecute(String s) {
             Log.i(S, "Reached onPostExecute");
             AfterAuthActivity.this.setContentView(R.layout.auth_success_layout);
-            TextView welcome = (TextView) AfterAuthActivity.this.findViewById(R.id.welcomesuccess);
+            final TextView welcome = (TextView) AfterAuthActivity.this.findViewById(R.id.welcomesuccess);
             welcome.setText("Welcome, " + accessToken.getUsername() + "!");
+            Log.i(S, "Welcome, " + accessToken.getUsername() + "!");
+            Log.i(S, "ANIMATION: Starting fade in animation");
+            welcome.startAnimation(animationFadeIn);
+            final Intent main = new Intent(AfterAuthActivity.this, MainActivity.class);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.i(S, "ANIMATION: Finished");
+                    startActivity(main);
+                    overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+                }
+            }, 3000);
         }
     }
 }

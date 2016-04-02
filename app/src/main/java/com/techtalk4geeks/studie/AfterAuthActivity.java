@@ -4,10 +4,10 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import org.json.JSONObject;
 
@@ -21,7 +21,6 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,6 +69,10 @@ public class AfterAuthActivity extends Activity {
             Log.e(S, "Failed!");
             throw new NullPointerException();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
     }
 
     @Override
@@ -215,7 +218,11 @@ public class AfterAuthActivity extends Activity {
             }
         }
 
-        protected void onPostExecute() {
+        protected void onPostExecute(String s) {
+            Log.i(S, "Reached onPostExecute");
+            AfterAuthActivity.this.setContentView(R.layout.auth_success_layout);
+            TextView welcome = (TextView) AfterAuthActivity.this.findViewById(R.id.welcomesuccess);
+            welcome.setText("Welcome, " + accessToken.getUsername() + "!");
         }
     }
 }

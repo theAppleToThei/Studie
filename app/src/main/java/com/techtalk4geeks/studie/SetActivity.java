@@ -4,14 +4,29 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 /**
  * Created by alex on 2/6/16.
  */
 public class SetActivity extends Activity {
+
+    QuizletSet quizletSet;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_set);
+        quizletSet = MainActivity.getCurrentQuizletSet();
+        setTitle(quizletSet.getTitle());
+        TextView title = (TextView) findViewById(R.id.quizletTitleText);
+        TextView creator = (TextView) findViewById(R.id.quizletUserText);
+        TextView termCount = (TextView) findViewById(R.id.quizletTermCount);
+        title.setText(quizletSet.getTitle());
+        creator.setText(quizletSet.getCreatorName());
+//        termCount.setText(quizletSet.getTermCount());
     }
 
     @Override

@@ -13,6 +13,8 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,6 +49,8 @@ public class MainActivity extends Activity {
     AlertDialog signInDialog;
     String quizletTitle = "null";
 
+    Animation animationFadeIn;
+
     public static Boolean isSignedIn = false;
     public static String ACCESS_TOKEN;
     public static String username;
@@ -61,6 +66,8 @@ public class MainActivity extends Activity {
     int substringEnd;
     int charCounter = 0;
 
+    public static QuizletSet currentQuizletSet;
+
     String setJSON;
 
     @Override
@@ -72,6 +79,8 @@ public class MainActivity extends Activity {
 
         getActionBar().setDisplayShowHomeEnabled(true);
         getActionBar().setIcon(R.drawable.studieactionbar);
+
+        animationFadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
 
         invalidURLDialog = new AlertDialog.Builder(MainActivity.this).create();
         invalidURLDialog.setTitle("Invalid URL");
@@ -173,29 +182,11 @@ public class MainActivity extends Activity {
                     Log.i(S, "username = " + username);
                 } else {
                     Log.i(S, "isSignedIn = " + isSignedIn);
-//                    findSetButton.setOnClickListener(new View.OnClickListener() {
-//                        public void onClick(View v) {
-//                            Uri uri = Uri.parse(authLink);
-//                            Intent webIntent = new Intent(Intent.ACTION_VIEW, uri);
-//                            startActivity(webIntent);
-//                        }
-//                    });
-//                    signInDialog = new AlertDialog.Builder(MainActivity.this).create();
-//                    signInDialog.setTitle("Please Sign In");
-//                    signInDialog.setMessage("You are about to be redirected to sign into your Quizlet account.");
-//                    signInDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-//                            new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    dialog.dismiss();
-//                                    Uri uri = Uri.parse(authLink);
-//                                    Intent webIntent = new Intent(Intent.ACTION_VIEW, uri);
-//                                    startActivity(webIntent);
-//                                }
-//                            });
-//                    signInDialog.show();
                     setContentView(R.layout.before_auth);
                     overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
                     Button nothanks = (Button) this.findViewById(R.id.nosignin);
+                    TextView disclaimer = (TextView) this.findViewById(R.id.signindescription);
+                    disclaimer.startAnimation(animationFadeIn);
                     nothanks.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v) {
                             setContentView(R.layout.activity_main);
@@ -218,19 +209,6 @@ public class MainActivity extends Activity {
             try {
                 file.createNewFile();
                 saveFile(MainActivity.this);
-//                signInDialog = new AlertDialog.Builder(MainActivity.this).create();
-//                signInDialog.setTitle("Please Sign In");
-//                signInDialog.setMessage("You are about to be redirected to sign into your Quizlet account.");
-//                signInDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-//                        new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                dialog.dismiss();
-//                                Uri uri = Uri.parse(authLink);
-//                                Intent webIntent = new Intent(Intent.ACTION_VIEW, uri);
-//                                startActivity(webIntent);
-//                            }
-//                        });
-//                signInDialog.show();
             } catch (Exception e) {
                 Log.e(S, "Exception while creating/saving file.");
                 e.printStackTrace();
@@ -238,6 +216,8 @@ public class MainActivity extends Activity {
             if (isSignedIn == false) {
                 setContentView(R.layout.before_auth);
                 overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+                TextView disclaimer = (TextView) this.findViewById(R.id.signindescription);
+                disclaimer.startAnimation(animationFadeIn);
                 Button nothanks = (Button) this.findViewById(R.id.nosignin);
                 nothanks.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
@@ -287,7 +267,26 @@ public class MainActivity extends Activity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.dev_sign_out) {
+            Log.i(S, "Developer Mode: Simulating sign out");
+            isSignedIn = false;
+            setContentView(R.layout.before_auth);
+            overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+            Button nothanks = (Button) this.findViewById(R.id.nosignin);
+            nothanks.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    setContentView(R.layout.activity_main);
+                    overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+                }
+            });
+            Button signInIntro = (Button) this.findViewById(R.id.signInButtonUI);
+            signInIntro.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Uri uri = Uri.parse(authLink);
+                    Intent webIntent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(webIntent);
+                }
+            });
             return true;
         }
 
@@ -427,6 +426,14 @@ public class MainActivity extends Activity {
         return result;
     }
 
+    public static QuizletSet getCurrentQuizletSet() {
+        return currentQuizletSet;
+    }
+
+    public static void setCurrentQuizletSet(QuizletSet quizletSet) {
+        currentQuizletSet = quizletSet;
+    }
+
     private static String getStringFromInputStream(InputStream is) {
 
         BufferedReader br = null;
@@ -472,12 +479,13 @@ public class MainActivity extends Activity {
                 setJSON = getSet(params[0]);
                 final QuizletSet quizletSet = new QuizletSet(setJSON);
                 quizletSet.setAPILink(params[0]);
-                QuizletUser quizletUser = new QuizletUser(getUser(quizletSet.getCreatorName()));
+//                QuizletUser quizletUser = new QuizletUser(getUser(quizletSet.getCreatorName()));
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         itWorkedDialog.setMessage(quizletSet.getDebugSummary());
-                        itWorkedDialog.show();
+//                        itWorkedDialog.show();
+                        setCurrentQuizletSet(quizletSet);
                         Intent intent = new Intent(MainActivity.this, SetActivity.class);
                         startActivity(intent);
                         Log.i(S, "Started SetActivity");

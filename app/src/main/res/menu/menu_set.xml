@@ -1,5 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
-    <item android:id="@+id/dev_sign_out" android:title="@string/action_settings"
+    <item android:id="@+id/viewinbrowser" android:title="@string/view_set_in_browser"
         android:orderInCategory="100" />
 </menu>

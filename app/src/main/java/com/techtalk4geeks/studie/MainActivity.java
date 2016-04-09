@@ -22,7 +22,6 @@ import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -134,34 +133,7 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 Log.d(S, "onClick received for findSetButton");
                 quizletLink = String.valueOf(quizletLinkEditText.getText().toString());
-                if (quizletLink.contains("quizlet.com/")) {
-                    Log.d(S, "quizletLink contains required domain");
-                    for (int i = 10; i < quizletLink.length(); i++) {
-                        if (quizletLink.charAt(i) == '/') {
-                            charCounter += 1;
-                            if (charCounter == 1) {
-                                substringStart = i + 1;
-                            } else if (charCounter == 2) {
-                                substringEnd = i;
-                                break;
-                            }
-                        }
-                    }
-                    apiLink = "https://api.quizlet.com/2.0/sets/"
-                            + quizletLink.substring(substringStart, substringEnd)
-                            + "?client_id=brgUUPyxDF&whitespace=1";
-                    Log.i(S, "Set quizletLink = " + quizletLink);
-                    Log.i(S, "Set apiLink = " + apiLink);
-                    try {
-                        new quizletSetOperations().execute(apiLink);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                } else {
-                    Log.e(S, "Invalid URL");
-                    invalidURLDialog.show();
-                }
+                new checkLink().execute(quizletLink);
             }
         });
 
@@ -243,6 +215,40 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void checkDomain() {
+        Log.i(S, "quizletLink = " + quizletLink);
+        int domainIndex = quizletLink.indexOf(".com/");
+        if (domainIndex <= 0) {
+            Log.e(S, "domainIndex <= 0");
+            throw new NumberFormatException();
+        }
+        int slashIndex = domainIndex + 4;
+        for (int i = slashIndex; i < quizletLink.length(); i++) {
+            charCounter += 1;
+            if (quizletLink.charAt(i) == '/') {
+                if (charCounter == 1) {
+                    substringStart = i + 1;
+                } else {
+                    substringEnd = i;
+                    break;
+                }
+            }
+        }
+        String apiID = quizletLink.substring(substringStart, substringEnd);
+        Log.i(S, "apiID = " + apiID);
+        apiLink = "https://api.quizlet.com/2.0/sets/"
+                + apiID
+                + "?client_id=brgUUPyxDF&whitespace=1";
+        Log.i(S, "Set quizletLink = " + quizletLink);
+        Log.i(S, "Set apiLink = " + apiLink);
+        try {
+            new quizletSetOperations().execute(apiLink);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 //    @Override
     // public void onBackPressed()
     // {
@@ -251,6 +257,21 @@ public class MainActivity extends Activity {
     // startActivity(start);
     // overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
     // }
+
+    public String reformatShortURL(String url) throws Exception {
+        HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+        con.setInstanceFollowRedirects(false);
+        con.connect();
+        con.getInputStream();
+
+        if (con.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM || con.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP) {
+            String redirectUrl = con.getHeaderField("Location");
+            Log.i(S, "Quizlet Link is being reformatted!");
+            Log.i(S, "New Quizlet Link = " + "https://quizlet.com" + redirectUrl);
+            return "https://quizlet.com" + redirectUrl;
+        }
+        return url;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -544,6 +565,41 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(String result) {
             Log.d(S, "Reached onPostExecute, Result = " + setJSON);
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+        }
+    }
+
+    private class checkLink extends
+            AsyncTask<String, String, String> {
+        String link;
+
+        @Override
+        protected void onPreExecute() {
+            Log.i(S, "Made it to onPreExecute()");
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            Log.i(S, "Made it to doInBackground()");
+            try {
+                Log.i(S, "Reformatting Link");
+                link = params[0];
+                link = reformatShortURL(link);
+            } catch (Exception e) {
+                Log.e(S, "Error After Program Start: " + e);
+            }
+
+            return "Error";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            quizletLink = link;
+            checkDomain();
         }
 
         @Override

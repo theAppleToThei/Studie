@@ -1,6 +1,8 @@
 package com.techtalk4geeks.studie;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +25,7 @@ public class SetActivity extends Activity {
         setTitle(quizletSet.getTitle());
         TextView title = (TextView) findViewById(R.id.quizletTitleText);
         TextView creator = (TextView) findViewById(R.id.quizletUserText);
-        TextView termCount = (TextView) findViewById(R.id.quizletTermCount);
+//        TextView termCount = (TextView) findViewById(R.id.quizletTermCount);
         title.setText(quizletSet.getTitle());
         creator.setText(quizletSet.getCreatorName());
 //        termCount.setText(quizletSet.getTermCount());
@@ -32,7 +34,7 @@ public class SetActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_set, menu);
         return true;
     }
 
@@ -44,7 +46,10 @@ public class SetActivity extends Activity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.viewinbrowser) {
+            Uri uri = Uri.parse(quizletSet.getURL());
+            Intent webIntent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(webIntent);
             return true;
         }
 

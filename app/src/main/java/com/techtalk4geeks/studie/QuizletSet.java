@@ -23,6 +23,7 @@ public class QuizletSet {
     String definitionLanguage;
     String creatorName;
     String apiLink;
+    QuizletUser creator;
     ArrayList<QuizletGroup> groups = new ArrayList<QuizletGroup>();
 
     public static final String S = "Studie";
@@ -33,17 +34,20 @@ public class QuizletSet {
 
         title = jsonOb.getString("title");
         description = jsonOb.getString("description");
-        URL = jsonOb.getString("url");
+        URL = "https://quizlet.com" + jsonOb.getString("url");
         id = jsonOb.getString("id");
         try {
             termCount = Integer.parseInt(jsonOb.getString("term_count"));
+            Log.i(S, "termCount = " + termCount);
         } catch (NumberFormatException nf) {
-            Log.e("Studie", "NUMBER FORMAT EXCEPTION ON TERM COUNT!!!");
+            Log.e(S, "NUMBER FORMAT EXCEPTION ON TERM COUNT!!!");
             termCount = -1;
         }
         termLanguage = jsonOb.getString("lang_terms");
         definitionLanguage = jsonOb.getString("lang_definitions");
         creatorName = jsonOb.getString("created_by");
+
+        creator = new QuizletUser(creatorName, MainActivity.ACCESS_TOKEN);
 
         JSONArray arr = jsonOb.getJSONArray("terms");
         for (int i = 0; i < arr.length(); i++) {
@@ -84,5 +88,13 @@ public class QuizletSet {
 
     public String getAPILink() {
         return apiLink;
+    }
+
+    public String getURL() {
+        return URL;
+    }
+
+    public int getTermCount() {
+        return termCount;
     }
 }

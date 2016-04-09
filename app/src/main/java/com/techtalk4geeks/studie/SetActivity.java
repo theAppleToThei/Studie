@@ -6,9 +6,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 /**
  * Created by alex on 2/6/16.
@@ -16,6 +16,7 @@ import org.w3c.dom.Text;
 public class SetActivity extends Activity {
 
     QuizletSet quizletSet;
+    TableLayout termsView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,10 +26,23 @@ public class SetActivity extends Activity {
         setTitle(quizletSet.getTitle());
         TextView title = (TextView) findViewById(R.id.quizletTitleText);
         TextView creator = (TextView) findViewById(R.id.quizletUserText);
-//        TextView termCount = (TextView) findViewById(R.id.quizletTermCount);
+        TextView termCount = (TextView) findViewById(R.id.quizletTermCount);
         title.setText(quizletSet.getTitle());
         creator.setText(quizletSet.getCreatorName());
-//        termCount.setText(quizletSet.getTermCount());
+        termCount.setText(String.valueOf(quizletSet.getTermCount()) + " Terms");
+        termsView = (TableLayout) findViewById(R.id.termsTable);
+        for (int i = 0; i < quizletSet.getTermCount(); i++) {
+            TableRow row = new TableRow(this);
+            TextView term = new TextView(this);
+            term.setText(quizletSet.getTerms().get(i).toString());
+//            term.setGravity(3);
+            TextView definition = new TextView(this);
+            definition.setText(quizletSet.getDefinitions().get(i).toString());
+//            definition.setGravity(5);
+            termsView.addView(row);
+            row.addView(term);
+            row.addView(definition);
+        }
     }
 
     @Override

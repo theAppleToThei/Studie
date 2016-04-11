@@ -41,6 +41,7 @@ public class MainActivity extends Activity {
 
     Button linkQuizletAccount;
     Button findSetButton;
+    Button signInButton;
     EditText quizletLinkEditText;
     AlertDialog invalidURLDialog;
     AlertDialog noURLDialog;
@@ -79,6 +80,8 @@ public class MainActivity extends Activity {
         getActionBar().setDisplayShowHomeEnabled(true);
         getActionBar().setIcon(R.drawable.studieactionbar);
 
+        signInButton = (Button) findViewById(R.id.signInButton);
+
         animationFadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
 
         invalidURLDialog = new AlertDialog.Builder(MainActivity.this).create();
@@ -93,7 +96,7 @@ public class MainActivity extends Activity {
 
         noURLDialog = new AlertDialog.Builder(MainActivity.this).create();
         noURLDialog.setTitle("No URL Provided");
-        noURLDialog.setMessage("Please paste a Quizlet link in the field to find a set.");
+        noURLDialog.setMessage("Please paste a Quizlet link in the field or share a set from the Quizlet app to find a set.");
         noURLDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -133,7 +136,11 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 Log.d(S, "onClick received for findSetButton");
                 quizletLink = String.valueOf(quizletLinkEditText.getText().toString());
-                new checkLink().execute(quizletLink);
+                if (quizletLink.isEmpty()) {
+                    noURLDialog.show();
+                } else {
+                    new checkLink().execute(quizletLink);
+                }
             }
         });
 
@@ -152,6 +159,9 @@ public class MainActivity extends Activity {
                     Log.i(S, "ACCESS_TOKEN = " + ACCESS_TOKEN);
                     username = JSONObject.getString("username");
                     Log.i(S, "username = " + username);
+                    TextView userView = (TextView) findViewById(R.id.quizletUser);
+                    userView.setText("Signed in as: " + username);
+                    signInButton.setText("View Sets");
                 } else {
                     Log.i(S, "isSignedIn = " + isSignedIn);
                     setContentView(R.layout.before_auth);
@@ -171,6 +181,11 @@ public class MainActivity extends Activity {
                             Uri uri = Uri.parse(authLink);
                             Intent webIntent = new Intent(Intent.ACTION_VIEW, uri);
                             startActivity(webIntent);
+                        }
+                    });
+                    signInButton.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            signedOutPromptSetup();
                         }
                     });
                 }
@@ -205,14 +220,66 @@ public class MainActivity extends Activity {
                         startActivity(webIntent);
                     }
                 });
+                signInButton.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        signedOutPromptSetup();
+                    }
+                });
+
+            } else {
+                Log.e(S, "Signed In But File Doesn't Exist!!!");
             }
             try {
                 getActionBar().setDisplayUseLogoEnabled(false);
             } catch (NullPointerException np) {
                 Log.e(S, "Method setDisplayUseLogoEnabled produced NullPointerException!");
             }
-
         }
+
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+
+        if (Intent.ACTION_SEND.equals(action) && type != null) {
+            if ("text/plain".equals(type)) {
+                try {
+                    if (isSignedIn) {
+                        handleSendText(intent);
+                    } else {
+                        signedOutPromptSetup();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void signedOutPromptSetup() {
+        Button nothanks;
+        Button signInIntro;
+        setContentView(R.layout.before_auth);
+        overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+        nothanks = (Button) this.findViewById(R.id.nosignin);
+        nothanks.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                setContentView(R.layout.activity_main);
+                overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+            }
+        });
+        signInIntro = (Button) this.findViewById(R.id.signInButtonUI);
+        signInIntro.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Uri uri = Uri.parse(authLink);
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(webIntent);
+            }
+        });
+    }
+
+    void handleSendText(Intent intent) throws Exception {
+        String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+        new checkLink().execute(sharedText);
     }
 
     public void checkDomain() {
@@ -308,6 +375,12 @@ public class MainActivity extends Activity {
                     startActivity(webIntent);
                 }
             });
+            signInButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    setContentView(R.layout.before_auth);
+                    overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+                }
+            });
             return true;
         }
 
@@ -382,7 +455,7 @@ public class MainActivity extends Activity {
     }
 
     public Boolean checkIfSignedIn() {
-        if (isSignedIn) {
+        if (!isSignedIn) {
             setContentView(R.layout.before_auth_required);
             overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
             return false;

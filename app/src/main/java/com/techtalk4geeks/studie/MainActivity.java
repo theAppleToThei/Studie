@@ -19,6 +19,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,6 +59,7 @@ public class MainActivity extends Activity {
     public static final String state = "PK_STUDIE";
 
     private static MainActivity me;
+    static Boolean isDevelopment = true;
 
     String quizletLink;
     String apiLink;
@@ -83,6 +85,10 @@ public class MainActivity extends Activity {
         signInButton = (Button) findViewById(R.id.signInButton);
 
         animationFadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
+
+        if(isDevelopment) {
+            displayDevelopmentToast("This is a development build.");
+        }
 
         invalidURLDialog = new AlertDialog.Builder(MainActivity.this).create();
         invalidURLDialog.setTitle("Invalid URL");
@@ -137,7 +143,7 @@ public class MainActivity extends Activity {
                 Log.d(S, "onClick received for findSetButton");
                 quizletLink = String.valueOf(quizletLinkEditText.getText().toString());
                 if (quizletLink.isEmpty()) {
-                    noURLDialog.show();
+                    displayToast("No URL Provided");
                 } else {
                     new checkLink().execute(quizletLink);
                 }
@@ -146,6 +152,7 @@ public class MainActivity extends Activity {
 
         if (file.exists()) {
             FileInputStream FIN;
+            displayDevelopmentToast("File exists");
             try {
                 FIN = openFileInput("Studie.txt");
                 InputStreamReader ISR = new InputStreamReader(FIN);
@@ -155,6 +162,7 @@ public class MainActivity extends Activity {
                 isSignedIn = JSONObject.getBoolean("isSignedIn");
                 Log.i(S, "isSignedIn = " + isSignedIn);
                 if (isSignedIn == true) {
+                    displayDevelopmentToast("Signed in.");
                     ACCESS_TOKEN = JSONObject.getString("ACCESS_TOKEN");
                     Log.i(S, "ACCESS_TOKEN = " + ACCESS_TOKEN);
                     username = JSONObject.getString("username");
@@ -193,6 +201,7 @@ public class MainActivity extends Activity {
                 e.printStackTrace();
             }
         } else {
+            displayDevelopmentToast("File Doesn't Exist");
             try {
                 file.createNewFile();
                 saveFile(MainActivity.this);
@@ -253,6 +262,20 @@ public class MainActivity extends Activity {
                 }
             }
         }
+    }
+
+    public void displayToast(String text) {
+        Toast toast = Toast.makeText(MainActivity.this, text,
+                Toast.LENGTH_SHORT);
+        toast.show();
+        Log.i(S, "Toast: " + text);
+    }
+
+    public void displayDevelopmentToast(String text) {
+        Toast toast = Toast.makeText(MainActivity.this, "DEV: " + text,
+                Toast.LENGTH_SHORT);
+        toast.show();
+        Log.i(S, "Dev Toast: " + text);
     }
 
     public void signedOutPromptSetup() {
@@ -316,14 +339,14 @@ public class MainActivity extends Activity {
 
     }
 
-//    @Override
-    // public void onBackPressed()
-    // {
-    // Intent start = new Intent(this, StartActivity.class);
-    // start.addCategory(Intent.CATEGORY_HOME);
-    // startActivity(start);
-    // overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
-    // }
+    @Override
+     public void onBackPressed()
+     {
+//     Intent start = new Intent(this, StartActivity.class);
+//     start.addCategory(Intent.CATEGORY_HOME);
+//     startActivity(start);
+//     overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+     }
 
     public String reformatShortURL(String url) throws Exception {
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
@@ -382,6 +405,12 @@ public class MainActivity extends Activity {
                 }
             });
             return true;
+        }
+        if (id == R.id.dev_audio_test) {
+            Log.i(S, "Developer Mode: Audio Test");
+            Intent intent = new Intent(this, AudioActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
         }
 
         return super.onOptionsItemSelected(item);

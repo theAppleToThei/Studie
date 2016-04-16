@@ -97,4 +97,16 @@ public class QuizletSet {
     public int getTermCount() {
         return termCount;
     }
+
+    public ArrayList getTerms() {
+        return terms;
+    }
+
+    public ArrayList getDefinitions() {
+        return definitions;
+    }
+
+    public QuizletUser getCreator() {
+        return creator;
+    }
 }

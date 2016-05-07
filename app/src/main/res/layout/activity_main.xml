@@ -28,72 +28,61 @@
             card_view:cardBackgroundColor="@color/green"
             card_view:cardCornerRadius="8dp">
 
-            <LinearLayout
+            <TableLayout
+                android:id="@+id/tableLayout1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/textView"
+                <TableRow
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/cardview"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginEnd="149dp"
-                    android:text="Use A Quizlet Link"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
-
-                <TableLayout
-                    android:id="@+id/tableLayout1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <TableRow
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignEnd="@+id/cardview"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginEnd="149dp"
+                        android:paddingLeft="15sp"
+                        android:paddingRight="15sp"
+                        android:paddingTop="10sp"
+                        android:text="Use A Quizlet Link"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/quizletLinkEditText"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignEnd="@+id/cardview"
+                        android:layout_below="@+id/cardview"
+                        android:layout_marginEnd="196dp"
+                        android:hint="@string/link_hint"
+                        android:imeOptions="actionSearch" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/findSetButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:background="@color/green_dark"
+                        android:text="Find Set" />
+                </TableRow>
+            </TableLayout>
 
-                        <EditText
-                            android:id="@+id/quizletLinkEditText"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_alignEnd="@+id/cardview"
-                            android:layout_below="@+id/cardview"
-                            android:layout_marginEnd="196dp"
-                            android:hint="@string/link_hint"
-                            android:imeOptions="actionSearch" />
-                    </TableRow>
-
-                    <TableRow
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/margin_medium"
-                            android:text="@string/cardview_contents"
-                            android:textColor="@color/white" />
-
-                    </TableRow>
-
-                    <TableRow
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <Button
-                            android:id="@+id/findSetButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@color/green_dark"
-                            android:text="Find Set" />
-                    </TableRow>
-                </TableLayout>
-
-            </LinearLayout>
         </android.support.v7.widget.CardView>
 
         <Space
@@ -135,16 +124,26 @@
                             android:layout_alignEnd="@+id/cardview"
                             android:layout_alignParentTop="true"
                             android:layout_marginEnd="149dp"
+                            android:paddingLeft="15sp"
+                            android:paddingRight="15sp"
+                            android:paddingTop="10sp"
                             android:text="Quizlet Account"
                             android:textAppearance="?android:attr/textAppearanceLarge" />
                     </TableRow>
 
-                    <TextView
+                    <TableRow
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/margin_medium"
-                        android:textColor="@color/white"
-                        android:text="@string/login_explaination" />
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/quizletUser"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/margin_medium"
+                            android:text="@string/login_explaination"
+                            android:textColor="@color/white" />
+                    </TableRow>
 
                     <TableRow
                         android:layout_width="wrap_content"
@@ -191,6 +190,9 @@
                     android:layout_alignEnd="@+id/cardview"
                     android:layout_alignParentTop="true"
                     android:layout_marginEnd="149dp"
+                    android:paddingLeft="15sp"
+                    android:paddingRight="15sp"
+                    android:paddingTop="10sp"
                     android:text="Recent"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -212,6 +214,8 @@
                             android:layout_alignEnd="@+id/cardview"
                             android:layout_alignParentTop="true"
                             android:layout_marginEnd="149dp"
+                            android:paddingLeft="15sp"
+                            android:paddingRight="15sp"
                             android:text="Recent Set 1"
                             android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -235,6 +239,8 @@
                             android:layout_alignEnd="@+id/cardview"
                             android:layout_alignParentTop="true"
                             android:layout_marginEnd="149dp"
+                            android:paddingLeft="15sp"
+                            android:paddingRight="15sp"
                             android:text="Recent Set 2"
                             android:textAppearance="?android:attr/textAppearanceSmall" />
 

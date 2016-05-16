@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.Space;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -43,9 +44,10 @@ public class SetActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set);
         quizletSet = MainActivity.getCurrentQuizletSet();
+//        playButton.setEnabled(true);
         onDoneDialog = new AlertDialog.Builder(SetActivity.this).create();
         onDoneDialog.setTitle("Demo Over");
-        onDoneDialog.setMessage("Thank you so much for demoing Studie. I hope you've enjoyed what I've created in the past few months and there is much more to come.\nThanks again!\nAlex Baratti");
+        onDoneDialog.setMessage("Thank you so much for demoing Studie. I hope you've enjoyed what I've created in the past few months and there is much more to come.\n\nThanks again!\nAlex Baratti");
         onDoneDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "RESTART DEMO",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -56,6 +58,7 @@ public class SetActivity extends Activity {
                 });
         setTitle(quizletSet.getTitle());
         playButton = (Button) findViewById(R.id.playSet);
+        playButton.setBackgroundColor(getResources().getColor(R.color.green));
         TextView title = (TextView) findViewById(R.id.quizletTitleText);
         TextView creator = (TextView) findViewById(R.id.quizletUserText);
         TextView termCount = (TextView) findViewById(R.id.quizletTermCount);
@@ -71,7 +74,10 @@ public class SetActivity extends Activity {
             TextView definition = new TextView(this);
             definition.setText(quizletSet.getDefinitions().get(i).toString());
 //            definition.setGravity(5);
+            Space space = new Space(SetActivity.this);
+            space.setMinimumWidth(50);
             termsView.addView(row);
+            row.addView(space);
             row.addView(term);
             row.addView(definition);
         }
@@ -88,6 +94,10 @@ public class SetActivity extends Activity {
 
         playButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                Log.i("Studie", "Play Button was clicked.");
+                playButton.setEnabled(false);
+                playButton.setFocusable(false);
+                playButton.setBackgroundColor(getResources().getColor(R.color.grey));
                 playSet();
             }
         });
@@ -217,6 +227,10 @@ public class SetActivity extends Activity {
                             .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
                             .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                             .build());
+//                    for (int i = 0; i < quizletSet.getTermCount(); i++) {
+//                        mTts.speak((CharSequence) quizletSet.getTerms().get(i), TextToSpeech.QUEUE_FLUSH, null, "");
+//                        mTts.speak("../", TextToSpeech.QUEUE_FLUSH, null, "");
+//                    }
                     mTts.speak(speakQuizlet, TextToSpeech.QUEUE_FLUSH, null, "");
                 } else if (status == TextToSpeech.ERROR) {
                     showErrorDialog();

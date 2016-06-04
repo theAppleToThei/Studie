@@ -2,9 +2,14 @@ package com.techtalk4geeks.studie;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,6 +23,9 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Space;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,8 +41,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 
 public class MainActivity extends Activity {
 
@@ -43,6 +53,8 @@ public class MainActivity extends Activity {
     Button linkQuizletAccount;
     Button findSetButton;
     Button signInButton;
+    Button recentSet1;
+    Button recentSet2;
     EditText quizletLinkEditText;
     AlertDialog invalidURLDialog;
     AlertDialog noURLDialog;
@@ -52,6 +64,8 @@ public class MainActivity extends Activity {
 
     Animation animationFadeIn;
 
+    ProgressDialog progress;
+
     public static Boolean isSignedIn = false;
     public static String ACCESS_TOKEN;
     public static String username;
@@ -59,18 +73,21 @@ public class MainActivity extends Activity {
     public static final String state = "PK_STUDIE";
 
     private static MainActivity me;
-    static Boolean isDevelopment = true;
+    public static Boolean isDevelopment = true;
+    public static Boolean isDemo = false;
 
     String quizletLink;
     String apiLink;
     String authLink = "https://quizlet.com/authorize?response_type=code&client_id=" + CLIENT_ID + "&scope=read&state=" + state;
     int substringStart;
     int substringEnd;
-    int charCounter = 0;
 
     public static QuizletSet currentQuizletSet;
 
     String setJSON;
+
+    ConnectivityManager cm;
+    NetworkInfo activeNetwork;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,12 +99,26 @@ public class MainActivity extends Activity {
         getActionBar().setDisplayShowHomeEnabled(true);
         getActionBar().setIcon(R.drawable.studieactionbar);
 
+        progress = new ProgressDialog(MainActivity.this);
+
         signInButton = (Button) findViewById(R.id.signInButton);
+        recentSet1 = (Button) findViewById(R.id.recentView1);
+        recentSet2 = (Button) findViewById(R.id.recentView2);
+
+        if (isDevelopment) {
+            signInButton.setEnabled(false);
+            recentSet1.setEnabled(false);
+            recentSet2.setEnabled(false);
+        }
 
         animationFadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
 
-        if(isDevelopment) {
-            displayDevelopmentToast("This is a development build.");
+        displayDevelopmentToast("This is a development build.");
+
+        if (!isConnected()) {
+            displayToast("No Network Connection.");
+        } else {
+            displayDevelopmentToast("Connected.");
         }
 
         invalidURLDialog = new AlertDialog.Builder(MainActivity.this).create();
@@ -143,8 +174,11 @@ public class MainActivity extends Activity {
                 Log.d(S, "onClick received for findSetButton");
                 quizletLink = String.valueOf(quizletLinkEditText.getText().toString());
                 if (quizletLink.isEmpty()) {
-                    displayToast("No URL Provided");
+                    displayToast("No URL Provided.");
+                } else if (!isConnected()) {
+                    displayToast("No Network Connection.");
                 } else {
+                    showProgressDialog();
                     new checkLink().execute(quizletLink);
                 }
             }
@@ -169,20 +203,20 @@ public class MainActivity extends Activity {
                     Log.i(S, "username = " + username);
                     TextView userView = (TextView) findViewById(R.id.quizletUser);
                     userView.setText("Signed in as: " + username);
-                    signInButton.setText("View Sets");
+                    signInButton.setText("View Feed");
                 } else {
                     Log.i(S, "isSignedIn = " + isSignedIn);
                     setContentView(R.layout.before_auth);
                     overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
-                    Button nothanks = (Button) this.findViewById(R.id.nosignin);
+//                    Button nothanks = (Button) this.findViewById(R.id.nosignin);
                     TextView disclaimer = (TextView) this.findViewById(R.id.signindescription);
                     disclaimer.startAnimation(animationFadeIn);
-                    nothanks.setOnClickListener(new View.OnClickListener() {
-                        public void onClick(View v) {
-                            setContentView(R.layout.activity_main);
-                            overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
-                        }
-                    });
+//                    nothanks.setOnClickListener(new View.OnClickListener() {
+//                        public void onClick(View v) {
+//                            setContentView(R.layout.activity_main);
+//                            overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+//                        }
+//                    });
                     Button signInIntro = (Button) this.findViewById(R.id.signInButtonUI);
                     signInIntro.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v) {
@@ -214,13 +248,13 @@ public class MainActivity extends Activity {
                 overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
                 TextView disclaimer = (TextView) this.findViewById(R.id.signindescription);
                 disclaimer.startAnimation(animationFadeIn);
-                Button nothanks = (Button) this.findViewById(R.id.nosignin);
-                nothanks.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        setContentView(R.layout.activity_main);
-                        overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
-                    }
-                });
+//                Button nothanks = (Button) this.findViewById(R.id.nosignin);
+//                nothanks.setOnClickListener(new View.OnClickListener() {
+//                    public void onClick(View v) {
+//                        setContentView(R.layout.activity_main);
+//                        overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+//                    }
+//                });
                 Button signInIntro = (Button) this.findViewById(R.id.signInButtonUI);
                 signInIntro.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
@@ -231,37 +265,102 @@ public class MainActivity extends Activity {
                 });
                 signInButton.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                        signedOutPromptSetup();
+                        Log.i(S, "onClick received for signInButton");
+                        displayDevelopmentToast("This button is currently not functional.");
                     }
                 });
 
             } else {
                 Log.e(S, "Signed In But File Doesn't Exist!!!");
-            }
-            try {
-                getActionBar().setDisplayUseLogoEnabled(false);
-            } catch (NullPointerException np) {
-                Log.e(S, "Method setDisplayUseLogoEnabled produced NullPointerException!");
-            }
-        }
-
-        Intent intent = getIntent();
-        String action = intent.getAction();
-        String type = intent.getType();
-
-        if (Intent.ACTION_SEND.equals(action) && type != null) {
-            if ("text/plain".equals(type)) {
                 try {
-                    if (isSignedIn) {
-                        handleSendText(intent);
-                    } else {
-                        signedOutPromptSetup();
+                    getActionBar().setDisplayUseLogoEnabled(false);
+                } catch (NullPointerException np) {
+                    Log.e(S, "Method setDisplayUseLogoEnabled produced NullPointerException!");
+                }
+
+            }
+
+            if (isDemo) {
+                Log.i(S, "THIS IS A DEMO BUILD OF " + S + "!");
+                setContentView(R.layout.demo);
+                overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+                Button startDemo = (Button) findViewById(R.id.startDemo);
+                startDemo.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        setContentView(R.layout.demo_sets);
+                        overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+                        TableLayout setsTable = (TableLayout) findViewById(R.id.demosSetTable);
+                        ArrayList<String> demoSetNames = new ArrayList<String>();
+                        demoSetNames.add(0, "Medical Terms");
+                        demoSetNames.add(1, "Spanish Terms");
+                        for (int i = 0; i < demoSetNames.size(); i++) {
+                            TableRow name = new TableRow(MainActivity.this);
+                            TextView setName = new TextView(MainActivity.this);
+                            name.setPadding(0, 10, 0, 0);
+                            name.setLayoutParams(new TableLayout.LayoutParams(
+                                    TableLayout.LayoutParams.MATCH_PARENT,
+                                    TableLayout.LayoutParams.MATCH_PARENT, 1.0f));
+                            setName.setTextSize(20);
+                            setName.setTypeface(Typeface.DEFAULT_BOLD);
+                            setName.setPadding(10, 0, 0, 0);
+                            setName.setTextColor(Color.parseColor("#000000"));
+                            setName.setText(demoSetNames.get(i));
+                            setName.setMinWidth(400);
+                            Button go = new Button(MainActivity.this);
+//                        go.setBackgroundResource(R.drawable.go);
+                            go.setText("Select Set");
+                            go.setBackgroundColor(getResources().getColor(R.color.blue));
+                            Space space = new Space(MainActivity.this);
+                            space.setMinimumWidth(50);
+                            setsTable.addView(name);
+                            name.addView(setName);
+                            name.addView(space);
+                            name.addView(go);
+                            final int num = i;
+                            go.setOnClickListener(new View.OnClickListener() {
+                                public void onClick(View v) {
+                                    ArrayList<String> demoSetURLs = new ArrayList<String>();
+                                    demoSetURLs.add(0, "https://quizlet.com/139054147/medical-terms-flash-cards/");
+                                    demoSetURLs.add(1, "https://quizlet.com/139055710/spanish-terms-flash-cards/");
+                                    showProgressDialog();
+                                    new checkLink().execute(demoSetURLs.get(num));
+                                }
+                            });
+                        }
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                });
+            }
+
+            Intent intent = getIntent();
+            String action = intent.getAction();
+            String type = intent.getType();
+
+            if (Intent.ACTION_SEND.equals(action) && type != null) {
+                if ("text/plain".equals(type)) {
+                    try {
+                        if (isSignedIn) {
+                            handleSendText(intent);
+                        } else {
+                            signedOutPromptSetup();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
+    }
+
+    public void showProgressDialog() {
+        progress.setTitle("Loading");
+        progress.setMessage("Retrieving Set");
+        progress.show();
+    }
+
+    public Boolean isConnected() {
+        cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
     public void displayToast(String text) {
@@ -272,10 +371,12 @@ public class MainActivity extends Activity {
     }
 
     public void displayDevelopmentToast(String text) {
-        Toast toast = Toast.makeText(MainActivity.this, "DEV: " + text,
-                Toast.LENGTH_SHORT);
-        toast.show();
-        Log.i(S, "Dev Toast: " + text);
+        if (isDevelopment) {
+            Toast toast = Toast.makeText(MainActivity.this, "DEV: " + text,
+                    Toast.LENGTH_SHORT);
+            toast.show();
+            Log.i(S, "Dev Toast: " + text);
+        }
     }
 
     public void signedOutPromptSetup() {
@@ -283,13 +384,13 @@ public class MainActivity extends Activity {
         Button signInIntro;
         setContentView(R.layout.before_auth);
         overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
-        nothanks = (Button) this.findViewById(R.id.nosignin);
-        nothanks.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                setContentView(R.layout.activity_main);
-                overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
-            }
-        });
+//        nothanks = (Button) this.findViewById(R.id.nosignin);
+//        nothanks.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                setContentView(R.layout.activity_main);
+//                overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+//            }
+//        });
         signInIntro = (Button) this.findViewById(R.id.signInButtonUI);
         signInIntro.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -300,12 +401,20 @@ public class MainActivity extends Activity {
         });
     }
 
-    void handleSendText(Intent intent) throws Exception {
+    void handleSendText(Intent intent) throws MalformedURLException {
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
-        new checkLink().execute(sharedText);
+        int domainIndex = sharedText.indexOf("https://quizlet.com/");
+        if (domainIndex <= 0) {
+            Log.e(S, "domainIndex <= 0");
+            throw new NumberFormatException();
+        }
+        String link = sharedText.substring(domainIndex);
+        showProgressDialog();
+        new checkLink().execute(link);
     }
 
     public void checkDomain() {
+        int charCounter = 0;
         Log.i(S, "quizletLink = " + quizletLink);
         int domainIndex = quizletLink.indexOf(".com/");
         if (domainIndex <= 0) {
@@ -340,16 +449,24 @@ public class MainActivity extends Activity {
     }
 
     @Override
-     public void onBackPressed()
-     {
+    public void onBackPressed() {
 //     Intent start = new Intent(this, StartActivity.class);
 //     start.addCategory(Intent.CATEGORY_HOME);
 //     startActivity(start);
 //     overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
-     }
+    }
 
     public String reformatShortURL(String url) throws Exception {
-        HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+        HttpURLConnection con;
+        try {
+            con = (HttpURLConnection) new URL(url).openConnection();
+        } catch (MalformedURLException m) {
+            Log.i(S, "Link is not a valid URL.");
+            int domainIndex = url.indexOf("quizlet.com/");
+            url = url.substring(domainIndex);
+            Log.i(S, "URL = " + url);
+            con = (HttpURLConnection) new URL(url).openConnection();
+        }
         con.setInstanceFollowRedirects(false);
         con.connect();
         con.getInputStream();
@@ -383,13 +500,13 @@ public class MainActivity extends Activity {
             isSignedIn = false;
             setContentView(R.layout.before_auth);
             overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
-            Button nothanks = (Button) this.findViewById(R.id.nosignin);
-            nothanks.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    setContentView(R.layout.activity_main);
-                    overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
-                }
-            });
+//            Button nothanks = (Button) this.findViewById(R.id.nosignin);
+//            nothanks.setOnClickListener(new View.OnClickListener() {
+//                public void onClick(View v) {
+//                    setContentView(R.layout.activity_main);
+//                    overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+//                }
+//            });
             Button signInIntro = (Button) this.findViewById(R.id.signInButtonUI);
             signInIntro.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -625,6 +742,7 @@ public class MainActivity extends Activity {
 
         @Override
         protected void onPostExecute(String result) {
+            progress.dismiss();
             Log.d(S, "Reached onPostExecute, Result = " + setJSON);
         }
 
@@ -692,6 +810,7 @@ public class MainActivity extends Activity {
                 link = params[0];
                 link = reformatShortURL(link);
             } catch (Exception e) {
+                e.printStackTrace();
                 Log.e(S, "Error After Program Start: " + e);
             }
 

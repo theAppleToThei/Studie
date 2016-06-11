@@ -61,6 +61,7 @@ public class MainActivity extends Activity {
     AlertDialog itWorkedDialog;
     AlertDialog signInDialog;
     String quizletTitle = "null";
+    ArrayList<QuizletSet> feedSets;
 
     Animation animationFadeIn;
 
@@ -104,12 +105,6 @@ public class MainActivity extends Activity {
         signInButton = (Button) findViewById(R.id.signInButton);
         recentSet1 = (Button) findViewById(R.id.recentView1);
         recentSet2 = (Button) findViewById(R.id.recentView2);
-
-        if (isDevelopment) {
-            signInButton.setEnabled(false);
-            recentSet1.setEnabled(false);
-            recentSet2.setEnabled(false);
-        }
 
         animationFadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
 
@@ -263,12 +258,6 @@ public class MainActivity extends Activity {
                         startActivity(webIntent);
                     }
                 });
-                signInButton.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        Log.i(S, "onClick received for signInButton");
-                        displayDevelopmentToast("This button is currently not functional.");
-                    }
-                });
 
             } else {
                 Log.e(S, "Signed In But File Doesn't Exist!!!");
@@ -330,22 +319,40 @@ public class MainActivity extends Activity {
                     }
                 });
             }
+        }
 
-            Intent intent = getIntent();
-            String action = intent.getAction();
-            String type = intent.getType();
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Log.i(S, "onClick received for signInButton");
+                if (isSignedIn) {
+                    setContentView(R.layout.feed_layout);
+                    overridePendingTransition(R.anim.anim_right_to_left, R.anim.anim_left_to_right);
+                    setTitle(username);
+                    TableLayout feedSetsTable = (TableLayout) findViewById(R.id.setsTable);
+                    feedSets = new ArrayList<QuizletSet>();
+                    showProgressDialog();
+                    new getFeed().execute();
+                } else {
+                    displayDevelopmentToast("This button is currently not functional.");
+                }
+            }
+        });
 
-            if (Intent.ACTION_SEND.equals(action) && type != null) {
-                if ("text/plain".equals(type)) {
-                    try {
-                        if (isSignedIn) {
-                            handleSendText(intent);
-                        } else {
-                            signedOutPromptSetup();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+
+        if (Intent.ACTION_SEND.equals(action) && type != null) {
+            Log.i(S, "Recieved ACTION_SEND");
+            if ("text/plain".equals(type)) {
+                try {
+                    if (isSignedIn) {
+                        handleSendText(intent);
+                    } else {
+                        signedOutPromptSetup();
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -751,6 +758,24 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void showErrorDialog() {
+        progress.dismiss();
+        Log.e("Studie", "Showing Error Dialog!");
+        AlertDialog onErrorDialog = new AlertDialog.Builder(MainActivity.this).create();
+        onErrorDialog.setTitle("Error");
+        onErrorDialog.setMessage("An unexpected error occured.");
+        onErrorDialog.setIcon(R.drawable.error);
+        onErrorDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    }
+                });
+        onErrorDialog.show();
+    }
+
     private class updateSetOperations extends
             AsyncTask<String, String, String> {
 
@@ -821,6 +846,60 @@ public class MainActivity extends Activity {
         protected void onPostExecute(String result) {
             quizletLink = link;
             checkDomain();
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+        }
+    }
+
+    private class getFeed extends
+            AsyncTask<String, String, String> {
+        String link;
+
+        @Override
+        protected void onPreExecute() {
+            Log.i(S, "Made it to onPreExecute()");
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            Log.i(S, "Made it to doInBackground()");
+
+            try {
+                URL url = new URL("https://api.quizlet.com/2.0/feed/home");
+                URLConnection connection;
+                connection = url.openConnection();
+
+                HttpURLConnection httpConnection = (HttpURLConnection) connection;
+                int responseCode = httpConnection.getResponseCode();
+
+                String response;
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    InputStream in = httpConnection.getInputStream();
+                    response = getStringFromInputStream(in);
+                    Log.i(S, "response = " + response);
+                } else {
+                    Log.e(S, "Connection was not ok");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showErrorDialog();
+                        }
+                    });
+                    return null;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(S, "Error After Program Start: " + e);
+            }
+
+            return "Error";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
         }
 
         @Override

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.techtalk4geeks.studie.Bar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:background="@color/black"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/bartext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Loading..."
+        android:textColor="@color/white"
+
+        android:textSize="30dp" />
+
+    <ImageView
+        android:id="@+id/baricon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/bartext"
+        android:src="@drawable/error" />
+
+</com.techtalk4geeks.studie.Bar>

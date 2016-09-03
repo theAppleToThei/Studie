@@ -1,11 +1,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:studie="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
     <item
         android:id="@+id/play"
-        android:orderInCategory="100"
+        studie:showAsAction="always"
         android:icon="@drawable/play"
-        android:title="Play" />
+        android:orderInCategory="100"
+        android:title="Play Setup" />
     <item
         android:id="@+id/viewinbrowser"
         android:orderInCategory="100"

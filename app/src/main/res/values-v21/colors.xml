@@ -13,6 +13,9 @@
     <color name="green_dark">#1E8C44</color>
     <color name="blue">#009fff</color>
     <color name="grey">#999999</color>
+    <color name="orange">#FF9000</color>
+
+    <color name="quizlet_blue">#3340A2</color>
 
     <!-- card colors -->
     <color name="card_background">#ffffff</color>

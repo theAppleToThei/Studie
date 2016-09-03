@@ -3,7 +3,6 @@
 
     <string name="action_settings">DEV Sign Out Sim</string>
     <string name="view_set_in_browser">View Set in Browser</string>
-    <string name="cardview_contents">Short links are not supported yet</string>
     <string name="link_hint">Paste a full Quizlet link here</string>
     <string name="login_explaination">Sign in to your Quizlet account to access your sets</string>
     <string name="title_activity_after_auth">AfterAuthActivity</string>
@@ -11,4 +10,9 @@
     <string name="signin">It looks like you\'re not signed in to your Quizlet account. Signing in to your Quizlet account allows you to access your feed, view your classes, and more! If you\'d rather not sign in, that\'s fine too. Just know that certain features require you to be signed in. You can sign in later as well.</string>
     <string name="signinbutton">SIGN IN</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_audio">AudioActivity</string>
+
+    <string-array name="voices_array">
+        <item>Default Voice</item>
+    </string-array>
 </resources>

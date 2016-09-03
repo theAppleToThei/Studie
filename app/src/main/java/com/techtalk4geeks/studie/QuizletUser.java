@@ -71,4 +71,7 @@ public class QuizletUser {
         return name;
     }
 
+    public int getTotalTermsEntered() {
+        return totalTermsEntered;
+    }
 }

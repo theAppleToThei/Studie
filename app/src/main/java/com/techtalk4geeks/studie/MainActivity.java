@@ -1,5 +1,6 @@
 package com.techtalk4geeks.studie;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -18,17 +19,20 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewParent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -59,9 +63,9 @@ public class MainActivity extends Activity {
     AlertDialog invalidURLDialog;
     AlertDialog noURLDialog;
     AlertDialog itWorkedDialog;
-    AlertDialog signInDialog;
-    String quizletTitle = "null";
-    ArrayList<QuizletSet> feedSets;
+
+    ArrayList<String> feedSetNames;
+    String feedJSON;
 
     Animation animationFadeIn;
 
@@ -97,8 +101,10 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         File file = new File(getFilesDir(), "Studie.txt");
 
-        getActionBar().setDisplayShowHomeEnabled(true);
-        getActionBar().setIcon(R.drawable.studieactionbar);
+        ActionBar actionBar = getActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setIcon(R.drawable.studieactionbar);
 
         progress = new ProgressDialog(MainActivity.this);
 
@@ -155,12 +161,9 @@ public class MainActivity extends Activity {
         quizletLinkEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if ((actionId == EditorInfo.IME_ACTION_SEARCH) || ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN))) {
-
-                    return true;
-                } else {
-                    return false;
-                }
+                return (actionId == EditorInfo.IME_ACTION_SEARCH)
+                        || ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER)
+                        && (event.getAction() == KeyEvent.ACTION_DOWN));
             }
         });
 
@@ -190,7 +193,7 @@ public class MainActivity extends Activity {
                 JSONObject JSONObject = new JSONObject(jsonString);
                 isSignedIn = JSONObject.getBoolean("isSignedIn");
                 Log.i(S, "isSignedIn = " + isSignedIn);
-                if (isSignedIn == true) {
+                if (isSignedIn) {
                     displayDevelopmentToast("Signed in.");
                     ACCESS_TOKEN = JSONObject.getString("ACCESS_TOKEN");
                     Log.i(S, "ACCESS_TOKEN = " + ACCESS_TOKEN);
@@ -232,13 +235,14 @@ public class MainActivity extends Activity {
         } else {
             displayDevelopmentToast("File Doesn't Exist");
             try {
-                file.createNewFile();
+                boolean newFile = file.createNewFile();
+                assert newFile;
                 saveFile(MainActivity.this);
             } catch (Exception e) {
                 Log.e(S, "Exception while creating/saving file.");
                 e.printStackTrace();
             }
-            if (isSignedIn == false) {
+            if (!isSignedIn) {
                 setContentView(R.layout.before_auth);
                 overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
                 TextView disclaimer = (TextView) this.findViewById(R.id.signindescription);
@@ -279,7 +283,7 @@ public class MainActivity extends Activity {
                         setContentView(R.layout.demo_sets);
                         overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
                         TableLayout setsTable = (TableLayout) findViewById(R.id.demosSetTable);
-                        ArrayList<String> demoSetNames = new ArrayList<String>();
+                        ArrayList<String> demoSetNames = new ArrayList<>();
                         demoSetNames.add(0, "Medical Terms");
                         demoSetNames.add(1, "Spanish Terms");
                         for (int i = 0; i < demoSetNames.size(); i++) {
@@ -308,7 +312,7 @@ public class MainActivity extends Activity {
                             final int num = i;
                             go.setOnClickListener(new View.OnClickListener() {
                                 public void onClick(View v) {
-                                    ArrayList<String> demoSetURLs = new ArrayList<String>();
+                                    ArrayList<String> demoSetURLs = new ArrayList<>();
                                     demoSetURLs.add(0, "https://quizlet.com/139054147/medical-terms-flash-cards/");
                                     demoSetURLs.add(1, "https://quizlet.com/139055710/spanish-terms-flash-cards/");
                                     showProgressDialog();
@@ -328,10 +332,10 @@ public class MainActivity extends Activity {
                     setContentView(R.layout.feed_layout);
                     overridePendingTransition(R.anim.anim_right_to_left, R.anim.anim_left_to_right);
                     setTitle(username);
-                    TableLayout feedSetsTable = (TableLayout) findViewById(R.id.setsTable);
-                    feedSets = new ArrayList<QuizletSet>();
-                    showProgressDialog();
+                    feedSetNames = new ArrayList<String>();
+                    showProgressDialog("Retrieving Sets");
                     new getFeed().execute();
+
                 } else {
                     displayDevelopmentToast("This button is currently not functional.");
                 }
@@ -361,6 +365,12 @@ public class MainActivity extends Activity {
     public void showProgressDialog() {
         progress.setTitle("Loading");
         progress.setMessage("Retrieving Set");
+        progress.show();
+    }
+
+    public void showProgressDialog(String message) {
+        progress.setTitle("Loading");
+        progress.setMessage(message);
         progress.show();
     }
 
@@ -535,6 +545,21 @@ public class MainActivity extends Activity {
             Intent intent = new Intent(this, AudioActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+        }
+        if (id == R.id.dev_test_ui) {
+            Log.i(S, "Developer Mode: New UI");
+            setContentView(R.layout.new_ui);
+            LinearLayout barList = (LinearLayout) findViewById(R.id.barlayout);
+            Bar findBar = (Bar) findViewById(R.id.barBar1);
+            findBar.setBar("Find Set", R.mipmap.search, R.color.green, R.id.bartext1, R.id.baricon1);
+            Bar quizletBar = (Bar) findViewById(R.id.barBar2);
+            quizletBar.setBar("Quizlet Feed", R.drawable.quizletlogo, R.color.quizlet_blue, R.id.bartext2, R.id.baricon2);
+            Bar savedBar = (Bar) findViewById(R.id.barBar3);
+            savedBar.setBar("Save", R.drawable.save, R.color.blue, R.id.bartext3, R.id.baricon3);
+            Bar shareBar = (Bar) findViewById(R.id.barBar4);
+            shareBar.setBar("Share", R.drawable.share, R.color.orange, R.id.bartext4, R.id.baricon4);
+            Bar settingsBar = (Bar) findViewById(R.id.barBar5);
+            settingsBar.setBar("Settings", R.mipmap.settings, R.color.grey, R.id.bartext5, R.id.baricon5);
         }
 
         return super.onOptionsItemSelected(item);
@@ -866,6 +891,7 @@ public class MainActivity extends Activity {
         @Override
         protected String doInBackground(String... params) {
             Log.i(S, "Made it to doInBackground()");
+            ArrayList<Integer> feedIDs = new ArrayList<>();
 
             try {
                 URL url = new URL("https://api.quizlet.com/2.0/feed/home");
@@ -873,13 +899,14 @@ public class MainActivity extends Activity {
                 connection = url.openConnection();
 
                 HttpURLConnection httpConnection = (HttpURLConnection) connection;
+                httpConnection.setRequestProperty("Authorization", "Bearer " + ACCESS_TOKEN);
                 int responseCode = httpConnection.getResponseCode();
 
                 String response;
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     InputStream in = httpConnection.getInputStream();
-                    response = getStringFromInputStream(in);
-                    Log.i(S, "response = " + response);
+                    feedJSON = getStringFromInputStream(in);
+                    Log.i(S, "response = " + feedJSON);
                 } else {
                     Log.e(S, "Connection was not ok");
                     runOnUiThread(new Runnable() {
@@ -889,6 +916,27 @@ public class MainActivity extends Activity {
                         }
                     });
                     return null;
+                }
+                try {
+                    JSONObject jsonOb = new JSONObject(feedJSON);
+                    JSONArray items = jsonOb.getJSONArray("items");
+                    for (int i = 0; i < items.length(); i++) {
+                        JSONObject item = items.getJSONObject(i);
+                        JSONObject itemData = item.getJSONObject("item_data");
+                        int id = itemData.getInt("id");
+                        String title = itemData.getString("title");
+                        Log.i(S, "Found Set: " + title);
+                        feedIDs.add(id);
+                        feedSetNames.add(title);
+                    }
+//                    for (int i = 0; i < feedIDs.size(); i++) {
+//                        String JSON = getSet("https://api.quizlet.com/2.0/sets/" + feedIDs.get(i) + "?client_id=brgUUPyxDF&whitespace=1");
+//                        QuizletSet quizletSet = new QuizletSet(JSON);
+//                        feedSets.add(quizletSet);
+//                        Log.i(S, "Added " + quizletSet.getTitle());
+//                    }
+                } catch (Exception e) {
+                    Log.wtf(S, "Something happened while retrieving a feed.");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -900,6 +948,19 @@ public class MainActivity extends Activity {
 
         @Override
         protected void onPostExecute(String result) {
+            TableLayout feedSetTable = (TableLayout) findViewById(R.id.setsTable);
+            for (int i = 0; i < feedSetNames.size(); i++) {
+                TableRow row = new TableRow(MainActivity.this);
+                TextView name = new TextView(MainActivity.this);
+                name.setText(feedSetNames.get(i));
+                name.setTextSize(16);
+                Space space = new Space(MainActivity.this);
+                space.setMinimumWidth(50);
+                feedSetTable.addView(row);
+                row.addView(name);
+                row.addView(space);
+            }
+            progress.hide();
         }
 
         @Override

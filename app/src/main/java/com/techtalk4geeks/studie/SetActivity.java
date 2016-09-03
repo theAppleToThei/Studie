@@ -45,17 +45,19 @@ public class SetActivity extends Activity {
         setContentView(R.layout.activity_set);
         quizletSet = MainActivity.getCurrentQuizletSet();
 //        playButton.setEnabled(true);
-        onDoneDialog = new AlertDialog.Builder(SetActivity.this).create();
-        onDoneDialog.setTitle("Demo Over");
-        onDoneDialog.setMessage("Thank you so much for demoing Studie. I hope you've enjoyed what I've created in the past few months and there is much more to come.\n\nThanks again!\nAlex Baratti");
-        onDoneDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "RESTART DEMO",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        Intent intent = new Intent(SetActivity.this, MainActivity.class);
-                        startActivity(intent);
-                    }
-                });
+        if (MainActivity.isDemo) {
+            onDoneDialog = new AlertDialog.Builder(SetActivity.this).create();
+            onDoneDialog.setTitle("Demo Over");
+            onDoneDialog.setMessage("Thank you so much for demoing Studie. I hope you've enjoyed what I've created in the past few months and there is much more to come.\n\nThanks again!\nAlex Baratti");
+            onDoneDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "RESTART DEMO",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            Intent intent = new Intent(SetActivity.this, MainActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+        }
         setTitle(quizletSet.getTitle());
         playButton = (Button) findViewById(R.id.playSet);
         playButton.setBackgroundColor(getResources().getColor(R.color.green));
@@ -77,8 +79,8 @@ public class SetActivity extends Activity {
             Space space = new Space(SetActivity.this);
             space.setMinimumWidth(50);
             termsView.addView(row);
-            row.addView(space);
             row.addView(term);
+            row.addView(space);
             row.addView(definition);
         }
         creator.setOnClickListener(new View.OnClickListener() {
@@ -134,6 +136,14 @@ public class SetActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent main = new Intent(this, MainActivity.class);
+        main.addCategory(Intent.CATEGORY_HOME);
+        startActivity(main);
+        overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+    }
+
     public void playSetup() {
         Button playButton = (Button) findViewById(R.id.play);
         final StringBuffer speakQuizlet = new StringBuffer();
@@ -184,9 +194,9 @@ public class SetActivity extends Activity {
             public void onClick(View v) {
                 for (int i = 0; i < quizletSet.getTermCount(); i++) {
                     speakQuizlet.append(quizletSet.getTerms().get(i));
-                    speakQuizlet.append(" ");
+                    speakQuizlet.append(". ");
                     speakQuizlet.append(quizletSet.getDefinitions().get(i));
-                    speakQuizlet.append(" ");
+                    speakQuizlet.append(". ");
                 }
                 Log.i("Studie", speakQuizlet.toString());
 
@@ -239,9 +249,9 @@ public class SetActivity extends Activity {
         });
         for (int i = 0; i < quizletSet.getTermCount(); i++) {
             speakQuizlet.append(quizletSet.getTerms().get(i));
-            speakQuizlet.append(" ");
+            speakQuizlet.append(". ");
             speakQuizlet.append(quizletSet.getDefinitions().get(i));
-            speakQuizlet.append(" ");
+            speakQuizlet.append(". ");
         }
         Log.i("Studie", speakQuizlet.toString());
 

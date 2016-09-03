@@ -1,5 +1,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
-    <item android:id="@+id/dev_sign_out" android:title="@string/action_settings"
-        android:orderInCategory="100" />
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_menu"
+    tools:context=".MainActivity">
+    <item
+        android:id="@+id/dev_sign_out"
+        android:orderInCategory="100"
+        android:title="@string/action_settings" />
+    <item
+        android:id="@+id/dev_audio_test"
+        android:orderInCategory="100"
+        android:title="DEV Audio Test" />
+    <item
+        android:id="@+id/dev_test_ui"
+        android:orderInCategory="100"
+        android:title="DEV UI Test" />
+    <item
+        android:id="@+id/sign_out"
+        android:orderInCategory="100"
+        android:title="Sign Out" />
+    <item
+        android:id="@+id/about"
+        android:orderInCategory="100"
+        android:title="About" />
 </menu>

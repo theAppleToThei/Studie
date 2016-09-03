@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="To enjoy all of the features of Studie, please sign into your Quizlet account"
+        android:text="To start using Studie, please sign into your Quizlet account"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:textColor="@color/black"
@@ -37,14 +37,14 @@
         android:background="@color/primary_dark"
         android:layout_gravity="center_horizontal" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Later"
-        android:background="@color/grey"
-        android:id="@+id/nosignin"
-        android:layout_marginTop="5dp"
-        android:layout_gravity="center_horizontal" />
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Later"-->
+        <!--android:background="@color/grey"-->
+        <!--android:id="@+id/nosignin"-->
+        <!--android:layout_marginTop="5dp"-->
+        <!--android:layout_gravity="center_horizontal" />-->
 
     <TextView
         android:layout_width="match_parent"

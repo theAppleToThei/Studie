@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -76,6 +77,20 @@ public class AfterAuthActivity extends Activity {
             Log.e(S, "Failed!");
             throw new NullPointerException();
         }
+    }
+
+    public void displayToast(String text) {
+        Toast toast = Toast.makeText(AfterAuthActivity.this, text,
+                Toast.LENGTH_SHORT);
+        toast.show();
+        Log.i(S, "Toast: " + text);
+    }
+
+    public void displayDevelopmentToast(String text) {
+        Toast toast = Toast.makeText(AfterAuthActivity.this, "DEV: " + text,
+                Toast.LENGTH_SHORT);
+        toast.show();
+        Log.i(S, "Dev Toast: " + text);
     }
 
     @Override
@@ -210,7 +225,7 @@ public class AfterAuthActivity extends Activity {
                 final HashMap hashMap = new HashMap<String, String>();
                 hashMap.put("grant_type", "authorization_code");
                 hashMap.put("code", CODE);
-                String requestCode = "grant_type=authorization_code&code=" + CODE;
+                String requestCode = "grant_type=authorization_code&code=" + CODE + "&redirect_uri=studie://afterauth";
                 String tokenJSON = performPostCall(requestCode);
                 JSONObject jsonOb;
                 String token;
@@ -231,6 +246,7 @@ public class AfterAuthActivity extends Activity {
             final TextView welcome = (TextView) AfterAuthActivity.this.findViewById(R.id.welcomesuccess);
             welcome.setText("Welcome, " + accessToken.getUsername() + "!");
             Log.i(S, "Welcome, " + accessToken.getUsername() + "!");
+            displayDevelopmentToast("Access Token: " + accessToken.getAccessToken());
             Log.i(S, "ANIMATION: Starting fade in animation");
             welcome.startAnimation(animationFadeIn);
             final Intent main = new Intent(AfterAuthActivity.this, MainActivity.class);

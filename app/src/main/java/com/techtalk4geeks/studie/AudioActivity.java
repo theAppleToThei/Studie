@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.File;
@@ -32,6 +33,8 @@ public class AudioActivity extends Activity {
     File file;
     String tempDestFile;
     Voice voice;
+    SeekBar speechRateBar;
+    AudioManager audioManager;
 
     public static final String S = "Studie";
 
@@ -42,10 +45,11 @@ public class AudioActivity extends Activity {
         setContentView(R.layout.activity_audio);
         bundle = savedInstanceState;
         file = new File(getFilesDir(), "Studie_Audio.txt");
-
         store = (Button) findViewById(R.id.button1);
         play = (Button) findViewById(R.id.button2);
         input = (EditText) findViewById(R.id.editText1);
+
+        audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
         mTts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
@@ -87,7 +91,11 @@ public class AudioActivity extends Activity {
                         Log.i(S, "onError()");
                     }
                 });
-                mTts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null, "");
+                HashMap<String, String> params = new HashMap<String, String>();
+                params.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(audioManager.STREAM_MUSIC));
+                Bundle extras = new Bundle();
+                extras.putSerializable("params", params);
+                mTts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, extras, "");
 //                new MySpeech(toSpeak);
             }
         });

@@ -551,6 +551,11 @@ public class MainActivity extends Activity {
             setContentView(R.layout.new_ui);
             Bar findBar = (Bar) findViewById(R.id.barBar1);
             findBar.setBar("Find Set", R.mipmap.search, R.color.green, R.id.bartext1, R.id.baricon1);
+            findBar.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    // TODO: Add multiple styles
+                }
+            });
             Bar quizletBar = (Bar) findViewById(R.id.barBar2);
             quizletBar.setBar("Quizlet Feed", R.drawable.quizletlogo, R.color.quizlet_blue, R.id.bartext2, R.id.baricon2);
             Bar savedBar = (Bar) findViewById(R.id.barBar3);

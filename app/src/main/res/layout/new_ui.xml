@@ -10,6 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         android:background="@color/black"
         android:orientation="horizontal">
 
@@ -26,7 +28,7 @@
             android:id="@+id/baricon1"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_toRightOf="@id/bartext"
+            android:layout_toRightOf="@id/bartext1"
             android:src="@drawable/error" />
 
     </com.techtalk4geeks.studie.Bar>
@@ -36,6 +38,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         android:background="@color/black"
         android:orientation="horizontal">
 
@@ -52,7 +56,7 @@
             android:id="@+id/baricon2"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_toRightOf="@id/bartext"
+            android:layout_toRightOf="@id/bartext2"
             android:src="@drawable/error" />
 
     </com.techtalk4geeks.studie.Bar>
@@ -62,6 +66,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         android:background="@color/black"
         android:orientation="horizontal">
 
@@ -78,7 +84,7 @@
             android:id="@+id/baricon3"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_toRightOf="@id/bartext"
+            android:layout_toRightOf="@id/bartext3"
             android:src="@drawable/error" />
 
     </com.techtalk4geeks.studie.Bar>
@@ -87,6 +93,8 @@
         android:id="@+id/barBar4"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         android:layout_weight="1"
         android:background="@color/black"
         android:orientation="horizontal">
@@ -104,7 +112,7 @@
             android:id="@+id/baricon4"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_toRightOf="@id/bartext"
+            android:layout_toRightOf="@id/bartext4"
             android:src="@drawable/error" />
 
     </com.techtalk4geeks.studie.Bar>
@@ -113,6 +121,8 @@
         android:id="@+id/barBar5"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         android:layout_weight="1"
         android:background="@color/black"
         android:orientation="horizontal">
@@ -130,7 +140,7 @@
             android:id="@+id/baricon5"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_toRightOf="@id/bartext"
+            android:layout_toRightOf="@id/bartext5"
             android:src="@drawable/error" />
 
     </com.techtalk4geeks.studie.Bar>

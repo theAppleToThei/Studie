@@ -549,7 +549,6 @@ public class MainActivity extends Activity {
         if (id == R.id.dev_test_ui) {
             Log.i(S, "Developer Mode: New UI");
             setContentView(R.layout.new_ui);
-            LinearLayout barList = (LinearLayout) findViewById(R.id.barlayout);
             Bar findBar = (Bar) findViewById(R.id.barBar1);
             findBar.setBar("Find Set", R.mipmap.search, R.color.green, R.id.bartext1, R.id.baricon1);
             Bar quizletBar = (Bar) findViewById(R.id.barBar2);

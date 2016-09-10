@@ -549,21 +549,11 @@ public class MainActivity extends Activity {
         if (id == R.id.dev_test_ui) {
             Log.i(S, "Developer Mode: New UI");
             setContentView(R.layout.new_ui);
-            Bar findBar = (Bar) findViewById(R.id.barBar1);
-            findBar.setBar("Find Set", R.mipmap.search, R.color.green, R.id.bartext1, R.id.baricon1);
-            findBar.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    // TODO: Add multiple styles
-                }
-            });
-            Bar quizletBar = (Bar) findViewById(R.id.barBar2);
-            quizletBar.setBar("Quizlet Feed", R.drawable.quizletlogo, R.color.quizlet_blue, R.id.bartext2, R.id.baricon2);
-            Bar savedBar = (Bar) findViewById(R.id.barBar3);
-            savedBar.setBar("Save", R.drawable.save, R.color.blue, R.id.bartext3, R.id.baricon3);
-            Bar shareBar = (Bar) findViewById(R.id.barBar4);
-            shareBar.setBar("Share", R.drawable.share, R.color.orange, R.id.bartext4, R.id.baricon4);
-            Bar settingsBar = (Bar) findViewById(R.id.barBar5);
-            settingsBar.setBar("Settings", R.mipmap.settings, R.color.grey, R.id.bartext5, R.id.baricon5);
+            LinearLayout findBar = (LinearLayout) findViewById(R.id.barBar1);
+            LinearLayout quizletBar = (LinearLayout) findViewById(R.id.barBar2);
+            LinearLayout savedBar = (LinearLayout) findViewById(R.id.barBar3);
+            LinearLayout shareBar = (LinearLayout) findViewById(R.id.barBar4);
+            LinearLayout settingsBar = (LinearLayout) findViewById(R.id.barBar5);
         }
 
         return super.onOptionsItemSelected(item);

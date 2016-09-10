@@ -1,5 +1,7 @@
 package com.techtalk4geeks.studie;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,6 +27,7 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TableLayout;
@@ -70,6 +73,8 @@ public class MainActivity extends Activity {
     Animation animationFadeIn;
 
     ProgressDialog progress;
+
+    Boolean inCard = false;
 
     public static Boolean isSignedIn = false;
     public static String ACCESS_TOKEN;
@@ -471,6 +476,9 @@ public class MainActivity extends Activity {
 //     start.addCategory(Intent.CATEGORY_HOME);
 //     startActivity(start);
 //     overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+        if (inCard) {
+            setContentView(R.layout.new_ui);
+        }
     }
 
     public String reformatShortURL(String url) throws Exception {
@@ -549,34 +557,58 @@ public class MainActivity extends Activity {
         if (id == R.id.dev_test_ui) {
             Log.i(S, "Developer Mode: New UI");
             setContentView(R.layout.new_ui);
-            LinearLayout findBar = (LinearLayout) findViewById(R.id.barBar1);
+            final LinearLayout findBar = (LinearLayout) findViewById(R.id.barBar1);
+            final LinearLayout quizletBar = (LinearLayout) findViewById(R.id.barBar2);
+            final LinearLayout savedBar = (LinearLayout) findViewById(R.id.barBar3);
+            final LinearLayout shareBar = (LinearLayout) findViewById(R.id.barBar4);
+            final LinearLayout settingsBar = (LinearLayout) findViewById(R.id.barBar5);
             findBar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Log.i(S, "findBar onClick triggered");
+                    inCard = true;
+                    LinearLayout parent = (LinearLayout) findBar.getParent();
+                    quizletBar.animate().translationY(750);
+                    savedBar.animate().translationY(550);
+                    shareBar.animate().translationY(350);
+                    settingsBar.animate().translationY(150);
+                    findBar.getChildAt(0).setVisibility(View.INVISIBLE);
+                    findBar.getChildAt(1).setVisibility(View.INVISIBLE);
+                    findBar.animate().scaleY(3).setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                        }
+                    });
+                    parent.getTop();
+                    parent.getBottom();
                 }
             });
-            LinearLayout quizletBar = (LinearLayout) findViewById(R.id.barBar2);
             quizletBar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Log.i(S, "quizletBar onClick triggered");
+                    inCard = true;
                 }
             });
-            LinearLayout savedBar = (LinearLayout) findViewById(R.id.barBar3);
             savedBar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Log.i(S, "savedBar onClick triggered");
+                    inCard = true;
                 }
             });
-            LinearLayout shareBar = (LinearLayout) findViewById(R.id.barBar4);
             shareBar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Log.i(S, "shareBar onClick triggered");
+                    inCard = true;
                 }
             });
-            LinearLayout settingsBar = (LinearLayout) findViewById(R.id.barBar5);
             settingsBar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Log.i(S, "settingsBar onClick triggered");
+                    inCard = true;
                 }
             });
         }

@@ -550,10 +550,35 @@ public class MainActivity extends Activity {
             Log.i(S, "Developer Mode: New UI");
             setContentView(R.layout.new_ui);
             LinearLayout findBar = (LinearLayout) findViewById(R.id.barBar1);
+            findBar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                }
+            });
             LinearLayout quizletBar = (LinearLayout) findViewById(R.id.barBar2);
+            quizletBar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                }
+            });
             LinearLayout savedBar = (LinearLayout) findViewById(R.id.barBar3);
+            savedBar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                }
+            });
             LinearLayout shareBar = (LinearLayout) findViewById(R.id.barBar4);
+            shareBar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                }
+            });
             LinearLayout settingsBar = (LinearLayout) findViewById(R.id.barBar5);
+            settingsBar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                }
+            });
         }
 
         return super.onOptionsItemSelected(item);

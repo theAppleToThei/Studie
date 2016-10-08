@@ -592,7 +592,7 @@ public class MainActivity extends Activity {
                         settingsBar.animate().translationY(150);
                         int x = (WIDTH / 2) - (findBar.getChildAt(0).getWidth() + (findBar.getPaddingLeft() / 2));
                         findBar.getChildAt(0).animate().scaleY(1.0f / 3).translationY(75).translationX(-x);
-                        findBar.getChildAt(1).animate().scaleX(3).translationX(-1 * (WIDTH / 2) - (findBar.getChildAt(1).getWidth() + (findBar.getPaddingRight() / 2)));
+                        findBar.getChildAt(1).animate().scaleX(3).translationX(-1 * ((WIDTH / 2) - (findBar.getChildAt(1).getWidth() - (findBar.getPaddingRight() / 2))));
 //                        findBar.getChildAt(1).setVisibility(View.INVISIBLE);
                         inCard = true;
                         cardNumber = FIND_SET;

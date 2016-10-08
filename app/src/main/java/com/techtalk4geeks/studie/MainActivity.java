@@ -16,7 +16,9 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -75,6 +77,12 @@ public class MainActivity extends Activity {
     ProgressDialog progress;
 
     Boolean inCard = false;
+    int cardNumber;
+    final int FIND_SET = 0;
+    final int QUIZLET_FEED = 1;
+    final int SAVED = 2;
+    final int SHARE = 3;
+    final int SETTINGS = 4;
 
     public static Boolean isSignedIn = false;
     public static String ACCESS_TOKEN;
@@ -85,6 +93,9 @@ public class MainActivity extends Activity {
     private static MainActivity me;
     public static Boolean isDevelopment = true;
     public static Boolean isDemo = false;
+
+    int WIDTH;
+    int HEIGHT;
 
     String quizletLink;
     String apiLink;
@@ -105,6 +116,11 @@ public class MainActivity extends Activity {
         me = this;
         setContentView(R.layout.activity_main);
         File file = new File(getFilesDir(), "Studie.txt");
+
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        HEIGHT = displaymetrics.heightPixels;
+        WIDTH = displaymetrics.widthPixels;
 
         ActionBar actionBar = getActionBar();
         assert actionBar != null;
@@ -301,7 +317,7 @@ public class MainActivity extends Activity {
                             setName.setTextSize(20);
                             setName.setTypeface(Typeface.DEFAULT_BOLD);
                             setName.setPadding(10, 0, 0, 0);
-                            setName.setTextColor(Color.parseColor("#000000"));
+                            setName.setTextColor(Color.WHITE);
                             setName.setText(demoSetNames.get(i));
                             setName.setMinWidth(400);
                             Button go = new Button(MainActivity.this);
@@ -478,6 +494,7 @@ public class MainActivity extends Activity {
 //     overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
         if (inCard) {
             setContentView(R.layout.new_ui);
+            inCard = false;
         }
     }
 
@@ -557,6 +574,7 @@ public class MainActivity extends Activity {
         if (id == R.id.dev_test_ui) {
             Log.i(S, "Developer Mode: New UI");
             setContentView(R.layout.new_ui);
+            inCard = false;
             final LinearLayout findBar = (LinearLayout) findViewById(R.id.barBar1);
             final LinearLayout quizletBar = (LinearLayout) findViewById(R.id.barBar2);
             final LinearLayout savedBar = (LinearLayout) findViewById(R.id.barBar3);
@@ -565,50 +583,98 @@ public class MainActivity extends Activity {
             findBar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.i(S, "findBar onClick triggered");
-                    inCard = true;
-                    LinearLayout parent = (LinearLayout) findBar.getParent();
-                    quizletBar.animate().translationY(750);
-                    savedBar.animate().translationY(550);
-                    shareBar.animate().translationY(350);
-                    settingsBar.animate().translationY(150);
-                    findBar.getChildAt(0).setVisibility(View.INVISIBLE);
-                    findBar.getChildAt(1).setVisibility(View.INVISIBLE);
-                    findBar.animate().scaleY(3).setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                        }
-                    });
-                    parent.getTop();
-                    parent.getBottom();
+                    Log.i(S, "findBar onClick triggered\ninCard is " + inCard);
+                    if (!inCard) {
+                        LinearLayout parent = (LinearLayout) findBar.getParent();
+                        quizletBar.animate().translationY(750);
+                        savedBar.animate().translationY(550);
+                        shareBar.animate().translationY(350);
+                        settingsBar.animate().translationY(150);
+                        int x = (WIDTH / 2) - (findBar.getChildAt(0).getWidth() + (findBar.getPaddingLeft() / 2));
+                        findBar.getChildAt(0).animate().scaleY(1.0f / 3).translationY(75).translationX(-x);
+                        findBar.getChildAt(1).animate().scaleX(3).translationX(-1 * (WIDTH / 2) - (findBar.getChildAt(1).getWidth() + (findBar.getPaddingRight() / 2)));
+//                        findBar.getChildAt(1).setVisibility(View.INVISIBLE);
+                        inCard = true;
+                        cardNumber = FIND_SET;
+                        findBar.animate().scaleY(3).setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+//                                Space space = new Space(MainActivity.this);
+//                                space.setBottom(200);
+//                                findBar.addView(space);
+
+                            }
+                        });
+                        ImageView search = new ImageView(MainActivity.this);
+                        search.setImageResource(R.mipmap.search);
+//                        findBar.addView(search);
+                        parent.getTop();
+                        parent.getBottom();
+                    }
                 }
             });
             quizletBar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Log.i(S, "quizletBar onClick triggered");
-                    inCard = true;
+                    if (!inCard) {
+                        inCard = true;
+                        cardNumber = QUIZLET_FEED;
+                        findBar.animate().translationY(950);
+                        savedBar.animate().translationY(550);
+                        shareBar.animate().translationY(350);
+                        settingsBar.animate().translationY(150);
+                    } else {
+                        switch (cardNumber) {
+                            case FIND_SET:
+                                quizletBar.animate().translationY(-350);
+                                savedBar.animate().translationY(-550);
+                                shareBar.animate().translationY(-350);
+                                settingsBar.animate().translationY(-150);
+                                findBar.getChildAt(0).setVisibility(View.VISIBLE);
+                                findBar.getChildAt(1).setVisibility(View.VISIBLE);
+                                inCard = false;
+                                findBar.animate().scaleY(1 / 3).setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                    }
+                                });
+                        }
+                    }
                 }
             });
             savedBar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Log.i(S, "savedBar onClick triggered");
-                    inCard = true;
+                    if (!inCard) {
+                        inCard = true;
+                        cardNumber = SAVED;
+                        quizletBar.animate().translationY(750);
+                        findBar.animate().translationY(950);
+                        shareBar.animate().translationY(350);
+                        settingsBar.animate().translationY(150);
+                    }
                 }
             });
             shareBar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Log.i(S, "shareBar onClick triggered");
-                    inCard = true;
+                    if (!inCard) {
+                        inCard = true;
+                        cardNumber = SHARE;
+                    }
                 }
             });
             settingsBar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Log.i(S, "settingsBar onClick triggered");
-                    inCard = true;
+                    if (!inCard) {
+                        inCard = true;
+                        cardNumber = SETTINGS;
+                    }
                 }
             });
         }

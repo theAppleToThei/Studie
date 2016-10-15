@@ -2,6 +2,7 @@ package com.techtalk4geeks.studie;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -18,12 +19,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewParent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
@@ -90,9 +89,9 @@ public class MainActivity extends Activity {
     public static final String CLIENT_ID = "brgUUPyxDF";
     public static final String state = "PK_STUDIE";
 
+    @SuppressLint("StaticFieldLeak")
     private static MainActivity me;
-    public static Boolean isDevelopment = true;
-    public static Boolean isDemo = false;
+    public static boolean isDemo = false;
 
     int WIDTH;
     int HEIGHT;
@@ -139,8 +138,6 @@ public class MainActivity extends Activity {
 
         if (!isConnected()) {
             displayToast("No Network Connection.");
-        } else {
-            displayDevelopmentToast("Connected.");
         }
 
         invalidURLDialog = new AlertDialog.Builder(MainActivity.this).create();
@@ -353,7 +350,7 @@ public class MainActivity extends Activity {
                     setContentView(R.layout.feed_layout);
                     overridePendingTransition(R.anim.anim_right_to_left, R.anim.anim_left_to_right);
                     setTitle(username);
-                    feedSetNames = new ArrayList<String>();
+                    feedSetNames = new ArrayList<>();
                     showProgressDialog("Retrieving Sets");
                     new getFeed().execute();
 
@@ -409,7 +406,7 @@ public class MainActivity extends Activity {
     }
 
     public void displayDevelopmentToast(String text) {
-        if (isDevelopment) {
+        if (BuildConfig.DEBUG) {
             Toast toast = Toast.makeText(MainActivity.this, "DEV: " + text,
                     Toast.LENGTH_SHORT);
             toast.show();
@@ -418,17 +415,9 @@ public class MainActivity extends Activity {
     }
 
     public void signedOutPromptSetup() {
-        Button nothanks;
         Button signInIntro;
         setContentView(R.layout.before_auth);
         overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
-//        nothanks = (Button) this.findViewById(R.id.nosignin);
-//        nothanks.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                setContentView(R.layout.activity_main);
-//                overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
-//            }
-//        });
         signInIntro = (Button) this.findViewById(R.id.signInButtonUI);
         signInIntro.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -442,9 +431,10 @@ public class MainActivity extends Activity {
     void handleSendText(Intent intent) throws MalformedURLException {
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
         int domainIndex = sharedText.indexOf("https://quizlet.com/");
-        if (domainIndex <= 0) {
-            Log.e(S, "domainIndex <= 0");
-            throw new NumberFormatException();
+        if (domainIndex < 0) {
+            Log.wtf(S, "domainIndex < 0");
+            displayDevelopmentToast("Quizlet URL Not Found in intent");
+            throw new MalformedURLException("Quizlet URL Not Found in intent");
         }
         String link = sharedText.substring(domainIndex);
         showProgressDialog();
@@ -605,8 +595,13 @@ public class MainActivity extends Activity {
 
                             }
                         });
-                        ImageView search = new ImageView(MainActivity.this);
-                        search.setImageResource(R.mipmap.search);
+//                        ImageView search = new ImageView(MainActivity.this);
+                        ImageView searchVector = (ImageView) findViewById(R.id.baricon1);
+                        searchVector.setMinimumHeight(144);
+                        searchVector.setMinimumWidth(144);
+                        searchVector.setAdjustViewBounds(true);
+                        searchVector.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        searchVector.setImageResource(R.drawable.search_vector);
 //                        findBar.addView(search);
                         parent.getTop();
                         parent.getBottom();
@@ -707,6 +702,7 @@ public class MainActivity extends Activity {
         saveFile(MainActivity.me);
     }
 
+    @SuppressWarnings("unused")
     public String getUser(String username) throws Exception {
         String apiLink = "https://api.quizlet.com/2.0/users/" + username + "?access_token=" + ACCESS_TOKEN + "&whitespace=1";
         Log.i(S, "User apiLink = " + apiLink);
@@ -745,10 +741,12 @@ public class MainActivity extends Activity {
         }
     }
 
+    @SuppressWarnings("unused")
     public void updateSet(QuizletSet quizletSet) {
         new updateSetOperations().execute(quizletSet.getAPILink());
     }
 
+    @SuppressWarnings("unused")
     public Boolean checkIfSignedIn() {
         if (!isSignedIn) {
             setContentView(R.layout.before_auth_required);
@@ -934,7 +932,6 @@ public class MainActivity extends Activity {
                 Log.i(S, "Requesting set...");
                 setJSON = getSet(params[0]);
                 QuizletSet quizletSet = new QuizletSet(setJSON);
-                QuizletUser quizletUser = new QuizletUser(getUser(quizletSet.getCreatorName()));
                 // TODO: Update the current set
                 runOnUiThread(new Runnable() {
                     @Override
@@ -997,7 +994,6 @@ public class MainActivity extends Activity {
 
     private class getFeed extends
             AsyncTask<String, String, String> {
-        String link;
 
         @Override
         protected void onPreExecute() {
@@ -1019,7 +1015,6 @@ public class MainActivity extends Activity {
                 httpConnection.setRequestProperty("Authorization", "Bearer " + ACCESS_TOKEN);
                 int responseCode = httpConnection.getResponseCode();
 
-                String response;
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     InputStream in = httpConnection.getInputStream();
                     feedJSON = getStringFromInputStream(in);

@@ -561,6 +561,11 @@ public class MainActivity extends Activity {
             startActivity(intent);
             overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
         }
+        if (id == R.id.dev_quizlet_set) {
+//            Intent intent = new Intent(this, NewSetActivity.class);
+//            startActivity(intent);
+//            overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+        }
         if (id == R.id.dev_test_ui) {
             Log.i(S, "Developer Mode: New UI");
             setContentView(R.layout.new_ui);

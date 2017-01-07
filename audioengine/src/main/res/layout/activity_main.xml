@@ -17,14 +17,27 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="104dp"
         android:background="@color/green"
-        android:text="Audio Test"
+        android:width="150dp"
+        android:text="Hello World Test"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/quizletTestButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/audioTestButton"
+        android:layout_marginTop="104dp"
+        android:background="@color/quizlet_blue"
+        android:width="150dp"
+        android:text="Quizlet Test Set"
         android:textColor="@color/white" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/audioTestButton"
+        android:layout_below="@+id/quizletTestButton"
         android:paddingTop="20dp"
         android:textAlignment="center"
         android:text="Uses a set designed to test basic speaking capabilities." />

@@ -17,6 +17,7 @@ public class QuizletSet {
     int termCount;
     ArrayList<String> terms = new ArrayList<String>();
     ArrayList<String> definitions = new ArrayList<String>();
+    ArrayList<String> fullList = new ArrayList<String>();
     String apiLink;
 
     public static final String S = "Studie";
@@ -39,6 +40,8 @@ public class QuizletSet {
         for (int i = 0; i < arr.length(); i++) {
             terms.add(i, arr.getJSONObject(i).getString("term"));
             definitions.add(i, arr.getJSONObject(i).getString("definition"));
+            fullList.add(i, arr.getJSONObject(i).getString("term"));
+            fullList.add(i, arr.getJSONObject(i).getString("definition"));
         }
     }
 
@@ -75,5 +78,9 @@ public class QuizletSet {
 
     public ArrayList getDefinitions() {
         return definitions;
+    }
+
+    public ArrayList getFullList() {
+        return fullList;
     }
 }

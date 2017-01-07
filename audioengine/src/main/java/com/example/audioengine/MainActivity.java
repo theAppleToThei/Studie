@@ -1,7 +1,12 @@
 package com.example.audioengine;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
@@ -10,9 +15,24 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Space;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -26,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
         String tempDestFile;
         Voice voice;
         AudioManager audioManager;
+
+        QuizletSet testSet;
+        String testSetJSON;
 
         public AudioCoordinator(Bundle savedInstanceState) {
             bundle = savedInstanceState;
@@ -78,14 +101,125 @@ public class MainActivity extends AppCompatActivity {
                     audioEngine = new AudioCoordinator(bundle); // Rebounds ttsEngine
                 }
             });
+
+            quizletTestButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    log("quizletTestButton triggered");
+
+                    new getTestSet().execute();
+
+                    for (String term : testSet.fullList) {
+                        String toSpeak = term;
+                        mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                            @Override
+                            public void onStart(String s) {
+                                Log.i("audioEngine", "onStart()");
+                            }
+
+                            @Override
+                            public void onDone(String s) {
+                                Log.i("audioEngine", "onDone()");
+                                mTts.shutdown();
+                            }
+
+                            @Override
+                            public void onError(String s) {
+                                Log.i("audioEngine", "onError()");
+                            }
+                        });
+                        HashMap<String, String> params = new HashMap<String, String>();
+                        params.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(audioManager.STREAM_MUSIC));
+                        Bundle extras = new Bundle();
+                        extras.putSerializable("params", params);
+                        mTts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, extras, "");
+                        audioEngine = new AudioCoordinator(bundle); // Rebounds ttsEngine
+                    }
+                }
+            });
         }
 
         public void parse(QuizletSet quizletSet) {
 
         }
+
+        public String getTestSet() throws Exception {
+            URL url = new URL("https://api.quizlet.com/2.0/sets/174880891?client_id=brgUUPyxDF&whitespace=1");
+
+            URLConnection connection;
+            connection = url.openConnection();
+
+            HttpURLConnection httpConnection = (HttpURLConnection) connection;
+
+            int responseCode = httpConnection.getResponseCode();
+
+            Log.i("audioEngine", "Expecting: " + HttpURLConnection.HTTP_OK);
+            Log.i("audioEngine", "Actual: " + responseCode);
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                InputStream in = httpConnection.getInputStream();
+
+                BufferedReader br = null;
+                StringBuilder sb = new StringBuilder();
+
+                String line;
+                try {
+                    br = new BufferedReader(new InputStreamReader(in));
+                    while ((line = br.readLine()) != null) {
+                        sb.append(line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (br != null) {
+                        try {
+                            br.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                return sb.toString();
+            } else {
+                return null;
+            }
+        }
+
+        private class getTestSet extends
+                AsyncTask<String, String, String> {
+
+            ProgressDialog progress = new ProgressDialog(MainActivity.this);
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                progress.setTitle("Loading");
+                progress.setMessage("Retrieving Test Set");
+                progress.show();
+            }
+
+            @Override
+            protected String doInBackground(String... params) {
+                try {
+                    testSet = new QuizletSet(getTestSet());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                progress.hide();
+            }
+
+            @Override
+            protected void onProgressUpdate(String... values) {
+            }
+        }
     }
 
     Button audioTestButton;
+    Button quizletTestButton;
     AudioCoordinator audioEngine;
 
     @Override
@@ -94,8 +228,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         audioTestButton = (Button) findViewById(R.id.audioTestButton);
+        quizletTestButton = (Button) findViewById(R.id.quizletTestButton);
         audioEngine = new AudioCoordinator(savedInstanceState);
 
+        if (isConnected()) {
+            Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "Not Connected", Toast.LENGTH_SHORT).show();
+            Log.w("audioEngine", "Android device is not connected to the internet.");
+        }
+    }
+
+    public Boolean isConnected() {
+        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
     void log(String message) {

@@ -3,14 +3,17 @@ package com.example.audioengine;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,6 +46,38 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
+
+            audioTestButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    log("audioTestButton triggered");
+
+                    String toSpeak = "Hello world";
+                    Toast.makeText(getApplicationContext(), toSpeak, Toast.LENGTH_SHORT).show();
+                    mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                        @Override
+                        public void onStart(String s) {
+                            Log.i("audioEngine", "onStart()");
+                        }
+
+                        @Override
+                        public void onDone(String s) {
+                            Log.i("audioEngine", "onDone()");
+                            mTts.shutdown();
+                        }
+
+                        @Override
+                        public void onError(String s) {
+                            Log.i("audioEngine", "onError()");
+                        }
+                    });
+                    HashMap<String, String> params = new HashMap<String, String>();
+                    params.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(audioManager.STREAM_MUSIC));
+                    Bundle extras = new Bundle();
+                    extras.putSerializable("params", params);
+                    mTts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, extras, "");
+                    audioEngine = new AudioCoordinator(bundle); // Rebounds ttsEngine
+                }
+            });
         }
 
         public void parse(QuizletSet quizletSet) {
@@ -61,11 +96,6 @@ public class MainActivity extends AppCompatActivity {
         audioTestButton = (Button) findViewById(R.id.audioTestButton);
         audioEngine = new AudioCoordinator(savedInstanceState);
 
-        audioTestButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                log("audioTestButton triggered");
-            }
-        });
     }
 
     void log(String message) {

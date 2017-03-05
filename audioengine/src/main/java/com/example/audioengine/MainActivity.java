@@ -2,6 +2,7 @@ package com.example.audioengine;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
@@ -10,6 +11,7 @@ import android.os.AsyncTask;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -50,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         QuizletSet testSet;
         String testSetJSON;
 
+        String toSpeak = "Hello World";
+
         public AudioCoordinator(Bundle savedInstanceState) {
             bundle = savedInstanceState;
             file = new File(getFilesDir(), "Studie_Audio.txt");
@@ -74,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     log("audioTestButton triggered");
 
-                    String toSpeak = "Hello world";
                     Toast.makeText(getApplicationContext(), toSpeak, Toast.LENGTH_SHORT).show();
                     mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                         @Override
@@ -102,37 +105,34 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+            nextTermButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if (toSpeak.equalsIgnoreCase("Hello World")) {
+                        toSpeak = "World Hello";
+                    } else {
+                        toSpeak = "Hello World";
+                    }
+                }
+            });
+
             quizletTestButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     log("quizletTestButton triggered");
 
-                    new getTestSet().execute();
+                    if (isConnected()) {
+                        new getTestSet().execute();
 
-                    for (String term : testSet.fullList) {
-                        String toSpeak = term;
-                        mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-                            @Override
-                            public void onStart(String s) {
-                                Log.i("audioEngine", "onStart()");
-                            }
 
-                            @Override
-                            public void onDone(String s) {
-                                Log.i("audioEngine", "onDone()");
-                                mTts.shutdown();
-                            }
-
-                            @Override
-                            public void onError(String s) {
-                                Log.i("audioEngine", "onError()");
-                            }
-                        });
-                        HashMap<String, String> params = new HashMap<String, String>();
-                        params.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(audioManager.STREAM_MUSIC));
-                        Bundle extras = new Bundle();
-                        extras.putSerializable("params", params);
-                        mTts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, extras, "");
-                        audioEngine = new AudioCoordinator(bundle); // Rebounds ttsEngine
+                    } else {
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("No Connection")
+                                .setMessage("There is no internet connection.")
+                                .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
                     }
                 }
             });
@@ -192,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
+                Log.d("audioEngine", "onPreExecute reached");
                 progress.setTitle("Loading");
                 progress.setMessage("Retrieving Test Set");
                 progress.show();
@@ -199,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected String doInBackground(String... params) {
+                Log.d("audioEngine", "doInBackground reached");
                 try {
                     testSet = new QuizletSet(getTestSet());
                 } catch (Exception e) {
@@ -209,7 +211,36 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected void onPostExecute(String result) {
+                Log.d("audioEngine", "onPostExecute reached");
+
                 progress.hide();
+
+                for (String term : testSet.fullList) {
+                    String toSpeak = term;
+                    mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                        @Override
+                        public void onStart(String s) {
+                            Log.i("audioEngine", "onStart()");
+                        }
+
+                        @Override
+                        public void onDone(String s) {
+                            Log.i("audioEngine", "onDone()");
+                            mTts.shutdown();
+                        }
+
+                        @Override
+                        public void onError(String s) {
+                            Log.i("audioEngine", "onError()");
+                        }
+                    });
+                    HashMap<String, String> params = new HashMap<String, String>();
+                    params.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(audioManager.STREAM_MUSIC));
+                    Bundle extras = new Bundle();
+                    extras.putSerializable("params", params);
+                    mTts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, extras, "");
+                    audioEngine = new AudioCoordinator(bundle); // Rebounds ttsEngine
+                }
             }
 
             @Override
@@ -219,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     Button audioTestButton;
+    Button nextTermButton;
     Button quizletTestButton;
     AudioCoordinator audioEngine;
 
@@ -228,6 +260,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         audioTestButton = (Button) findViewById(R.id.audioTestButton);
+        nextTermButton = (Button) findViewById(R.id.nextTerm);
         quizletTestButton = (Button) findViewById(R.id.quizletTestButton);
         audioEngine = new AudioCoordinator(savedInstanceState);
 

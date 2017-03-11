@@ -218,7 +218,7 @@ public class MainActivity extends Activity {
                     username = JSONObject.getString("username");
                     Log.i(S, "username = " + username);
                     TextView userView = (TextView) findViewById(R.id.quizletUser);
-                    userView.setText("Signed in as: " + username);
+                    userView.setText(String.format("%s%s", getString(R.string.signed_in_as), username));
                     signInButton.setText("View Feed");
                 } else {
                     Log.i(S, "isSignedIn = " + isSignedIn);
@@ -290,57 +290,56 @@ public class MainActivity extends Activity {
                 }
 
             }
-
-            if (isDemo) {
-                Log.i(S, "THIS IS A DEMO BUILD OF " + S + "!");
-                setContentView(R.layout.demo);
-                overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
-                Button startDemo = (Button) findViewById(R.id.startDemo);
-                startDemo.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        setContentView(R.layout.demo_sets);
-                        overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
-                        TableLayout setsTable = (TableLayout) findViewById(R.id.demosSetTable);
-                        ArrayList<String> demoSetNames = new ArrayList<>();
-                        demoSetNames.add(0, "Medical Terms");
-                        demoSetNames.add(1, "Spanish Terms");
-                        for (int i = 0; i < demoSetNames.size(); i++) {
-                            TableRow name = new TableRow(MainActivity.this);
-                            TextView setName = new TextView(MainActivity.this);
-                            name.setPadding(0, 10, 0, 0);
-                            name.setLayoutParams(new TableLayout.LayoutParams(
-                                    TableLayout.LayoutParams.MATCH_PARENT,
-                                    TableLayout.LayoutParams.MATCH_PARENT, 1.0f));
-                            setName.setTextSize(20);
-                            setName.setTypeface(Typeface.DEFAULT_BOLD);
-                            setName.setPadding(10, 0, 0, 0);
-                            setName.setTextColor(Color.WHITE);
-                            setName.setText(demoSetNames.get(i));
-                            setName.setMinWidth(400);
-                            Button go = new Button(MainActivity.this);
+        }
+        if (isDemo) {
+            Log.i(S, "THIS IS A DEMO BUILD OF " + S + "!");
+            setContentView(R.layout.demo);
+            overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+            Button startDemo = (Button) findViewById(R.id.startDemo);
+            startDemo.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    setContentView(R.layout.demo_sets);
+                    overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+                    TableLayout setsTable = (TableLayout) findViewById(R.id.demosSetTable);
+                    ArrayList<String> demoSetNames = new ArrayList<>();
+                    demoSetNames.add(0, "Medical Terms");
+                    demoSetNames.add(1, "Spanish Terms");
+                    for (int i = 0; i < demoSetNames.size(); i++) {
+                        TableRow name = new TableRow(MainActivity.this);
+                        TextView setName = new TextView(MainActivity.this);
+                        name.setPadding(0, 10, 0, 0);
+                        name.setLayoutParams(new TableLayout.LayoutParams(
+                                TableLayout.LayoutParams.MATCH_PARENT,
+                                TableLayout.LayoutParams.MATCH_PARENT, 1.0f));
+                        setName.setTextSize(20);
+                        setName.setTypeface(Typeface.DEFAULT_BOLD);
+                        setName.setPadding(10, 0, 0, 0);
+                        setName.setTextColor(Color.BLACK);
+                        setName.setText(demoSetNames.get(i));
+                        setName.setMinWidth(400);
+                        Button go = new Button(MainActivity.this);
 //                        go.setBackgroundResource(R.drawable.go);
-                            go.setText("Select Set");
-                            go.setBackgroundColor(getResources().getColor(R.color.blue));
-                            Space space = new Space(MainActivity.this);
-                            space.setMinimumWidth(50);
-                            setsTable.addView(name);
-                            name.addView(setName);
-                            name.addView(space);
-                            name.addView(go);
-                            final int num = i;
-                            go.setOnClickListener(new View.OnClickListener() {
-                                public void onClick(View v) {
-                                    ArrayList<String> demoSetURLs = new ArrayList<>();
-                                    demoSetURLs.add(0, "https://quizlet.com/139054147/medical-terms-flash-cards/");
-                                    demoSetURLs.add(1, "https://quizlet.com/139055710/spanish-terms-flash-cards/");
-                                    showProgressDialog();
-                                    new checkLink().execute(demoSetURLs.get(num));
-                                }
-                            });
-                        }
+                        go.setText("Select Set");
+                        go.setBackgroundColor(getResources().getColor(R.color.blue));
+                        Space space = new Space(MainActivity.this);
+                        space.setMinimumWidth(50);
+                        setsTable.addView(name);
+                        name.addView(setName);
+                        name.addView(space);
+                        name.addView(go);
+                        final int num = i;
+                        go.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                ArrayList<String> demoSetURLs = new ArrayList<>();
+                                demoSetURLs.add(0, "https://quizlet.com/139054147/medical-terms-flash-cards/");
+                                demoSetURLs.add(1, "https://quizlet.com/139055710/spanish-terms-flash-cards/");
+                                showProgressDialog();
+                                new checkLink().execute(demoSetURLs.get(num));
+                            }
+                        });
                     }
-                });
-            }
+                }
+            });
         }
 
         signInButton.setOnClickListener(new View.OnClickListener() {
@@ -562,9 +561,9 @@ public class MainActivity extends Activity {
             overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
         }
         if (id == R.id.dev_quizlet_set) {
-//            Intent intent = new Intent(this, NewSetActivity.class);
-//            startActivity(intent);
-//            overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
+            Intent intent = new Intent(this, NewerSetActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.anim_in_up, R.anim.anim_out_down);
         }
         if (id == R.id.dev_test_ui) {
             Log.i(S, "Developer Mode: New UI");

@@ -52,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
         QuizletSet testSet;
         String testSetJSON;
 
+        int index = 1;
+        int structureIndex = -1;
+
         String toSpeak = "Hello World";
 
         public AudioCoordinator(Bundle savedInstanceState) {
@@ -102,16 +105,32 @@ public class MainActivity extends AppCompatActivity {
                     extras.putSerializable("params", params);
                     mTts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, extras, "");
                     audioEngine = new AudioCoordinator(bundle); // Rebounds ttsEngine
+                    if (structureIndex == 0) {
+                        toSpeak = String.valueOf(index) + " term";
+                        structureIndex++;
+                    } else if (structureIndex == 1) {
+                        toSpeak = String.valueOf(index) + " definition";
+                        structureIndex--;
+                        index++;
+                    }
+                    Log.i("AudioEngine", "toSpeak = " + toSpeak);
                 }
             });
 
             nextTermButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    if (toSpeak.equalsIgnoreCase("Hello World")) {
-                        toSpeak = "World Hello";
+                    if (structureIndex == 0) {
+                        toSpeak = String.valueOf(index) + " term";
+                        structureIndex++;
+                    } else if (structureIndex == 1) {
+                        toSpeak = String.valueOf(index) + " definition";
+                        structureIndex--;
+                        index++;
                     } else {
                         toSpeak = "Hello World";
+                        structureIndex = 0;
                     }
+                    Log.i("AudioEngine", "toSpeak = " + toSpeak);
                 }
             });
 

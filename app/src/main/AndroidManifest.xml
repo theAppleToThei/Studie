@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.techtalk4geeks.studie">
 
-
     <!-- To access Google+ APIs: -->
     <uses-permission android:name="android.permission.INTERNET" />
     <!--
@@ -68,6 +67,17 @@
             android:screenOrientation="portrait">
             android:label="@string/title_activity_audio">
         </activity>
+        <activity
+            android:name=".NewSetActivity"
+            android:label="@string/title_activity_new_set"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name=".ScrollingActivity"
+            android:label="@string/title_activity_scrolling" />
+        <activity
+            android:name=".NewerSetActivity"
+            android:label="@string/title_activity_newer_set"
+            android:theme="@style/Theme.AppCompat" />
     </application>
 
 </manifest>

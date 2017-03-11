@@ -5,14 +5,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.techtalk4geeks.studie.Bar
+    <LinearLayout
         android:id="@+id/barBar1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:background="@color/black"
+        android:background="@color/green"
         android:orientation="horizontal">
 
         <TextView
@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Loading..."
+            android:text="Find Set"
             android:textColor="@color/white"
             android:textSize="30dp" />
 
@@ -29,18 +29,23 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_toRightOf="@id/bartext1"
-            android:src="@drawable/error" />
+            android:maxHeight="48dp"
+            android:maxWidth="48dp"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:tint="@color/white"
+            android:src="@drawable/search_vector" />
 
-    </com.techtalk4geeks.studie.Bar>
+    </LinearLayout>
 
-    <com.techtalk4geeks.studie.Bar
+    <LinearLayout
         android:id="@+id/barBar2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:background="@color/black"
+        android:background="@color/quizlet_blue"
         android:orientation="horizontal">
 
         <TextView
@@ -48,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Loading..."
+            android:text="Quizlet Feed"
             android:textColor="@color/white"
             android:textSize="30dp" />
 
@@ -57,18 +62,18 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_toRightOf="@id/bartext2"
-            android:src="@drawable/error" />
+            android:src="@drawable/quizletlogo" />
 
-    </com.techtalk4geeks.studie.Bar>
+    </LinearLayout>
 
-    <com.techtalk4geeks.studie.Bar
+    <LinearLayout
         android:id="@+id/barBar3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:background="@color/black"
+        android:background="@color/blue"
         android:orientation="horizontal">
 
         <TextView
@@ -76,7 +81,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Loading..."
+            android:text="Saved"
             android:textColor="@color/white"
             android:textSize="30dp" />
 
@@ -85,18 +90,18 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_toRightOf="@id/bartext3"
-            android:src="@drawable/error" />
+            android:src="@drawable/save" />
 
-    </com.techtalk4geeks.studie.Bar>
+    </LinearLayout>
 
-    <com.techtalk4geeks.studie.Bar
+    <LinearLayout
         android:id="@+id/barBar4"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
         android:layout_weight="1"
-        android:background="@color/black"
+        android:background="@color/orange"
         android:orientation="horizontal">
 
         <TextView
@@ -104,7 +109,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Loading..."
+            android:text="Share"
             android:textColor="@color/white"
             android:textSize="30dp" />
 
@@ -113,18 +118,18 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_toRightOf="@id/bartext4"
-            android:src="@drawable/error" />
+            android:src="@drawable/share" />
 
-    </com.techtalk4geeks.studie.Bar>
+    </LinearLayout>
 
-    <com.techtalk4geeks.studie.Bar
+    <LinearLayout
         android:id="@+id/barBar5"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
         android:layout_weight="1"
-        android:background="@color/black"
+        android:background="@color/grey"
         android:orientation="horizontal">
 
         <TextView
@@ -132,7 +137,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Loading..."
+            android:text="Settings"
             android:textColor="@color/white"
             android:textSize="30dp" />
 
@@ -141,7 +146,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_toRightOf="@id/bartext5"
-            android:src="@drawable/error" />
+            android:src="@mipmap/settings" />
 
-    </com.techtalk4geeks.studie.Bar>
+    </LinearLayout>
 </LinearLayout>

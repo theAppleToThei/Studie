@@ -15,6 +15,10 @@
         android:orderInCategory="100"
         android:title="DEV UI Test" />
     <item
+        android:id="@+id/dev_quizlet_set"
+        android:orderInCategory="100"
+        android:title="DEV New Quizlet Set" />
+    <item
         android:id="@+id/sign_out"
         android:orderInCategory="100"
         android:title="Sign Out" />

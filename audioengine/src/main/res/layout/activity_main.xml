@@ -16,20 +16,32 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="104dp"
-        android:background="@color/green"
         android:width="150dp"
+        android:background="@color/green"
         android:text="Hello World Test"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/nextTerm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_toRightOf="@id/audioTestButton"
+        android:layout_marginTop="104dp"
+        android:width="150dp"
+        android:background="@color/green"
+        android:text="Next Term"
         android:textColor="@color/white" />
 
     <Button
         android:id="@+id/quizletTestButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_below="@id/audioTestButton"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="104dp"
-        android:background="@color/quizlet_blue"
         android:width="150dp"
+        android:background="@color/quizlet_blue"
         android:text="Quizlet Test Set"
         android:textColor="@color/white" />
 
@@ -39,6 +51,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/quizletTestButton"
         android:paddingTop="20dp"
-        android:textAlignment="center"
-        android:text="Uses a set designed to test basic speaking capabilities." />
+        android:text="Uses a set designed to test basic speaking capabilities."
+        android:textAlignment="center" />
 </RelativeLayout>

@@ -17,6 +17,8 @@
 
     <color name="quizlet_blue">#3340A2</color>
 
+    <color name="MENU_POPUP_ITEMS_COLOR">#FFFFFF</color>
+
     <!-- card colors -->
     <color name="card_background">#ffffff</color>
     <color name="card_shadow_1">#d4d4d4</color>
